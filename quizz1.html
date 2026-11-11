@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Questionnaire Nordique - Dépistage des TMS</title>
+  
+  <script src="vendor/tailwindcss-3.4.17.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif'],
+          },
+          colors: {
+            sauge: {
+              50: '#f4f6f4',
+              100: '#e5ece7',
+              200: '#cbdad0',
+              300: '#aba892',
+              400: '#8ba9a0',
+              500: '#79978e',
+              600: '#5c7870',
+              700: '#465e57',
+              800: '#354843',
+              900: '#23302d'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #f4f6f4;
+      color: #23302d;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .font-serif-custom {
+      font-family: 'Playfair Display', serif;
+    }
+    .bg-card {
+      background-color: #e5ece7;
+    }
+    
+    /* Custom Range Slider Styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: #cbdad0;
+      border-radius: 9999px;
+      height: 8px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #5c7870;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: transform 0.1s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    .site-footer {
+      background-color: #dfe8e3;
+      border-top: 1px solid #d2ddd6;
+      margin-top: 32px;
+    }
+    .site-footer-inner {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 20px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .site-footer p {
+      font-size: 0.86rem;
+      color: #53645d;
+    }
+    .site-footer .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+    .site-footer a {
+      color: #23302d;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .site-footer a:hover { text-decoration: underline; }
+    .rgpd-note {
+      font-size: 0.78rem;
+      color: #53645d;
+      line-height: 1.5;
+      max-width: 620px;
+    }
+    .admin-link {
+      background-color: transparent;
+      border: 1px solid #d0d7d3;
+      color: #23302d;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .admin-link:hover {
+      background-color: #ffffff;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-sauge-400 selection:text-white">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-sauge-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <h1 class="font-serif-custom font-bold text-2xl text-sauge-900">Questionnaire Nordique</h1>
+        <p class="text-xs text-sauge-600">Évaluation des douleurs musculaires et articulaires</p>
+      </div>
+
+      <!-- Progress Bar & Counter -->
+      <div class="w-full md:w-64 flex flex-col gap-1.5">
+        <div class="flex justify-between text-xs font-semibold text-sauge-700">
+          <span>Avancement</span>
+          <span id="progress-text">Zone 1 / 10</span>
+        </div>
+        <div class="w-full bg-sauge-100 rounded-full h-2.5 overflow-hidden border border-sauge-200">
+          <div id="progress-bar" class="bg-sauge-400 h-2.5 rounded-full transition-all duration-300" style="width: 10%"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-3xl w-full mx-auto px-4 sm:px-6 py-8">
+
+    <form id="nordic-form" onsubmit="return false;" class="space-y-6">
+      
+      <!-- Wrapper for Step-by-Step Question Cards -->
+      <div id="cards-wrapper">
+        <!-- Cards generated via JS -->
+      </div>
+
+      <!-- Navigation Controls (Précédent / Suivant / Continuer) -->
+      <div class="flex justify-between items-center pt-2">
+        <button id="btn-prev" type="button" onclick="changeStep(-1)" class="px-6 py-3 rounded-xl border border-sauge-300 bg-white text-sauge-800 font-semibold hover:bg-sauge-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+          &larr; Précédent
+        </button>
+
+        <!-- Bouton Suivant -->
+        <button id="btn-next" type="button" onclick="changeStep(1)" class="px-6 py-3 rounded-xl bg-sauge-400 text-white font-semibold hover:bg-sauge-500 transition-all shadow-md">
+          Suivant &rarr;
+        </button>
+
+        <!-- Bouton Continuer vers le test suivant (dernière étape) -->
+        <a id="btn-finish" href="transition-quizz2.html" onclick="return finishQuiz()" class="hidden px-6 py-3 rounded-xl bg-sauge-500 hover:bg-sauge-600 text-white font-semibold transition-all shadow-md items-center gap-2">
+          <span>Continuer</span>
+          <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </a>
+      </div>
+
+    </form>
+
+  </main>
+
+  <script>
+    // 9 Standard Nordic Questionnaire Body Zones
+    const zones = [
+      { id: "cou", label: "Cou", location: "du cou", desc: "Région cervicale" },
+      { id: "epaules", label: "Épaules", location: "des épaules", desc: "Clavicules et omoplates", hasSides: true },
+      { id: "coudes", label: "Coudes", location: "des coudes", desc: "Articulations des coudes", hasSides: true },
+      { id: "poignets", label: "Poignets / Mains", location: "des poignets ou des mains", desc: "Avant-bras, poignets, mains", hasSides: true },
+      { id: "haut_dos", label: "Haut du dos", location: "du haut du dos", desc: "Région dorsale" },
+      { id: "bas_dos", label: "Bas du dos", location: "du bas du dos", desc: "Région lombaire" },
+      { id: "hanches", label: "Hanches / Cuisses", location: "des hanches ou des cuisses", desc: "Bassin et région fessière" },
+      { id: "genoux", label: "Genoux", location: "des genoux", desc: "Articulations des genoux", hasSides: true },
+      { id: "chevilles", label: "Chevilles / Pieds", location: "des chevilles ou des pieds", desc: "Pieds et chevilles", hasSides: true }
+    ];
+
+    let currentStep = 0;
+    let nordicComment = '';
+
+    // State object storing user answers
+    const state = {};
+
+    zones.forEach(z => {
+      state[z.id] = {
+        hasPain12m: null,
+        intensity: 0,
+        side: null,
+        intensityBySide: { gauche: 1, droit: 1 },
+        moments: [],
+        workHindrance: null,
+        hasPain7d: null
+      };
+    });
+
+    function saveNordicDraft() {
+      try {
+        sessionStorage.setItem('tms_nordic_draft', JSON.stringify({ state, currentStep, comment: nordicComment }));
+      } catch (error) {}
+    }
+
+    function restoreNordicDraft() {
+      try {
+        const draft = JSON.parse(sessionStorage.getItem('tms_nordic_draft') || 'null');
+        if (!draft || !draft.state) return;
+        zones.forEach(zone => {
+          if (draft.state[zone.id]) {
+            Object.assign(state[zone.id], draft.state[zone.id]);
+            if (!Array.isArray(state[zone.id].moments)) state[zone.id].moments = [];
+            if (![null, 'gauche', 'droit', 'deux'].includes(state[zone.id].side)) {
+              state[zone.id].side = null;
+            }
+            if (!state[zone.id].intensityBySide || typeof state[zone.id].intensityBySide !== 'object') {
+              state[zone.id].intensityBySide = { gauche: 1, droit: 1 };
+            } else {
+              ['gauche', 'droit'].forEach(side => {
+                const value = Number(state[zone.id].intensityBySide[side]);
+                state[zone.id].intensityBySide[side] = Number.isInteger(value) && value >= 0 && value <= 10 ? value : 1;
+              });
+            }
+          }
+        });
+        nordicComment = typeof draft.comment === 'string' ? draft.comment : '';
+        if (Number.isInteger(draft.currentStep)) {
+          currentStep = Math.max(0, Math.min(draft.currentStep, zones.length));
+        }
+      } catch (error) {}
+    }
+
+    function getColorForIntensity(val) {
+      if (val === 0) return { label: "Aucune", text: "text-slate-700", bg: "bg-sky-100" };
+      if (val >= 1 && val <= 2) return { label: "Faible", text: "text-white", bg: "bg-green-600" };
+      if (val >= 3 && val <= 5) return { label: "Modérée", text: "text-slate-900", bg: "bg-yellow-500" };
+      if (val >= 6 && val <= 8) return { label: "Intense", text: "text-white", bg: "bg-orange-500" };
+      if (val >= 9 && val <= 10) return { label: "Extrême", text: "text-white", bg: "bg-red-600" };
+      return { label: "Non renseigné", text: "text-slate-600", bg: "bg-slate-200" };
+    }
+
+    function intensityControl(zoneId, value, side = null) {
+      const suffix = side ? `-${side}` : '';
+      const label = side ? `Intensité à ${side} (0 à 10) :` : 'Intensité de la douleur (0 à 10) :';
+      const handler = side
+        ? `handleSideIntensityChange('${zoneId}', '${side}', this.value)`
+        : `handleIntensityChange('${zoneId}', this.value)`;
+      return `
+        <div class="bg-white/80 rounded-2xl p-4 md:p-5 border border-sauge-200 space-y-3">
+          <div class="flex justify-between items-center gap-2">
+            <label class="text-sm font-semibold text-sauge-900">${label}</label>
+            <span id="intensity-val-${zoneId}${suffix}" class="px-3 py-1 text-xs font-bold rounded-lg transition-colors bg-sky-100 text-slate-800">${value} / 10 - ${getColorForIntensity(value).label}</span>
+          </div>
+          <input type="range" min="0" max="10" value="${value}" oninput="${handler}" class="w-full cursor-pointer" aria-label="${label}">
+          <div class="relative h-4 text-[10px] text-sauge-600 font-medium">
+            <span class="absolute left-0 whitespace-nowrap">0 (Aucune)</span>
+            <span class="absolute left-1/2 -translate-x-1/2 whitespace-nowrap">5 (Modérée)</span>
+            <span class="absolute right-0 whitespace-nowrap">10 (Insupportable)</span>
+          </div>
+        </div>`;
+    }
+
+    function renderSideIntensityControls(zoneId) {
+      const zoneState = state[zoneId];
+      const container = document.getElementById(`side-intensities-${zoneId}`);
+      if (!container) return;
+      const sides = zoneState.side === 'deux' ? ['gauche', 'droit'] : [zoneState.side];
+      container.innerHTML = sides.filter(Boolean).map(side =>
+        intensityControl(zoneId, zoneState.intensityBySide[side], side)
+      ).join('');
+      zoneState.intensity = Math.max(...sides.filter(Boolean).map(side => Number(zoneState.intensityBySide[side]) || 0), 0);
+    }
+
+    // Render Step Cards
+    function renderCards() {
+      const wrapper = document.getElementById('cards-wrapper');
+      wrapper.innerHTML = zones.map((zone, index) => {
+        return `
+          <div id="card-${zone.id}" class="step-card ${index === 0 ? '' : 'hidden'} bg-card rounded-3xl p-6 md:p-8 border border-sauge-300 shadow-xs transition-all duration-300 space-y-5">
+            
+            <!-- Card Header -->
+            <div class="flex justify-between items-start border-b border-sauge-200 pb-4">
+              <div class="flex items-center gap-3">
+                <span class="w-9 h-9 rounded-2xl bg-white text-sauge-800 font-serif-custom font-bold text-base flex items-center justify-center border border-sauge-300 shadow-xs">
+                  0${index + 1}
+                </span>
+                <div>
+                  <h3 class="font-serif-custom font-bold text-sauge-900 text-xl">${zone.label}</h3>
+                  <p class="text-xs text-sauge-600">${zone.desc}</p>
+                </div>
+              </div>
+              
+              <span id="badge-${zone.id}" class="px-3 py-1 rounded-full text-xs font-semibold bg-white/80 text-sauge-700 border border-sauge-300">
+                Non renseigné
+              </span>
+            </div>
+
+            <!-- Primary Question -->
+            <div class="bg-white/80 rounded-2xl p-4 md:p-5 border border-sauge-200 space-y-3">
+              <p class="text-sm md:text-base font-semibold text-sauge-900">
+                Au cours des 12 derniers mois, avez-vous eu des douleurs, gênes ou inconforts au niveau ${zone.location} ?
+              </p>
+              
+              <div class="flex gap-3 pt-1">
+                <label class="flex-1 cursor-pointer">
+                  <input type="radio" name="pain12m-${zone.id}" value="oui" onchange="handlePain12mToggle('${zone.id}', 'oui')" class="sr-only peer">
+                  <div class="p-3 text-center rounded-xl border border-sauge-300 bg-white text-sauge-800 text-sm font-medium peer-checked:bg-red-500 peer-checked:border-red-600 peer-checked:text-white peer-checked:font-bold hover:bg-sauge-50 transition-all shadow-xs">
+                    Oui
+                  </div>
+                </label>
+                <label class="flex-1 cursor-pointer">
+                  <input type="radio" name="pain12m-${zone.id}" value="non" onchange="handlePain12mToggle('${zone.id}', 'non')" class="sr-only peer">
+                  <div class="p-3 text-center rounded-xl border border-sauge-300 bg-white text-sauge-800 text-sm font-medium peer-checked:bg-sauge-100 peer-checked:border-sauge-500 peer-checked:text-sauge-900 peer-checked:font-bold hover:bg-sauge-50 transition-all shadow-xs">
+                    Non
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Conditional Sub-questions -->
+            <div id="sub-${zone.id}" class="hidden space-y-5 pt-2">
+              
+              ${zone.hasSides ? `
+                <div class="space-y-3">
+                  <fieldset class="bg-white/80 rounded-2xl p-4 md:p-5 border border-sauge-200 space-y-3">
+                    <legend class="text-sm font-semibold text-sauge-900">Quel côté est concerné ?</legend>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      ${[['gauche', 'Côté gauche'], ['droit', 'Côté droit'], ['deux', 'Les deux côtés']].map(([value, label]) => `
+                        <label class="cursor-pointer">
+                          <input type="radio" name="side-${zone.id}" value="${value}" onchange="handleSideChange('${zone.id}', '${value}')" class="sr-only peer">
+                          <span class="block p-3 text-center rounded-xl border border-sauge-300 bg-white text-sauge-800 text-sm font-medium peer-checked:bg-sauge-100 peer-checked:border-sauge-500 peer-checked:font-bold">${label}</span>
+                        </label>`).join('')}
+                    </div>
+                  </fieldset>
+                  <div id="side-intensities-${zone.id}" class="space-y-3"></div>
+                </div>
+              ` : intensityControl(zone.id, 0)}
+
+              <!-- Time Checkboxes -->
+              <div class="bg-white/80 rounded-2xl p-4 md:p-5 border border-sauge-200 space-y-3">
+                <label class="block text-sm font-semibold text-sauge-900">À quel(s) moment(s) la douleur survient-elle ?</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  ${[
+                    "Le matin au réveil",
+                    "Pendant le travail",
+                    "En fin de journée",
+                    "La nuit",
+                    "Toute la journée"
+                  ].map(moment => `
+                    <label class="flex items-center p-2.5 rounded-xl border border-sauge-200 bg-white hover:bg-sauge-50 cursor-pointer transition-colors">
+                      <input type="checkbox" class="moment-checkbox w-4 h-4 text-sauge-500 rounded border-sauge focus:ring-sauge-400" data-zone-id="${zone.id}" data-moment="${moment}">
+                      <span class="ml-2.5 text-sauge-800 font-medium">${moment}</span>
+                    </label>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Additional Questions -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- Work Hindrance -->
+                <div class="bg-white/80 rounded-2xl p-4 border border-sauge-200 space-y-2">
+                  <p class="text-xs font-semibold text-sauge-900">
+                    Cette gêne vous a-t-elle empêché(e) d'effectuer votre travail habituel (12 derniers mois) ?
+                  </p>
+                  <div class="flex gap-2 pt-1">
+                    <label class="flex-1 cursor-pointer">
+                      <input type="radio" name="hindrance-${zone.id}" value="oui" onchange="state['${zone.id}'].workHindrance = 'oui'; saveNordicDraft()" class="sr-only peer">
+                      <div class="p-2 text-center rounded-lg border border-sauge bg-white text-xs text-sauge-800 peer-checked:bg-sauge-500 peer-checked:text-white peer-checked:font-bold">Oui</div>
+                    </label>
+                    <label class="flex-1 cursor-pointer">
+                      <input type="radio" name="hindrance-${zone.id}" value="non" onchange="state['${zone.id}'].workHindrance = 'non'; saveNordicDraft()" class="sr-only peer">
+                      <div class="p-2 text-center rounded-lg border border-sauge bg-white text-xs text-sauge-800 peer-checked:bg-sauge-200 peer-checked:font-bold">Non</div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Pain in last 7 days -->
+                <div class="bg-white/80 rounded-2xl p-4 border border-sauge-200 space-y-2">
+                  <p class="text-xs font-semibold text-sauge-900">
+                    Avez-vous eu mal au niveau de cette zone au cours des 7 derniers jours ?
+                  </p>
+                  <div class="flex gap-2 pt-1">
+                    <label class="flex-1 cursor-pointer">
+                      <input type="radio" name="pain7d-${zone.id}" value="oui" onchange="state['${zone.id}'].hasPain7d = 'oui'; saveNordicDraft()" class="sr-only peer">
+                      <div class="p-2 text-center rounded-lg border border-sauge bg-white text-xs text-sauge-800 peer-checked:bg-sauge-500 peer-checked:text-white peer-checked:font-bold">Oui</div>
+                    </label>
+                    <label class="flex-1 cursor-pointer">
+                      <input type="radio" name="pain7d-${zone.id}" value="non" onchange="state['${zone.id}'].hasPain7d = 'non'; saveNordicDraft()" class="sr-only peer">
+                      <div class="p-2 text-center rounded-lg border border-sauge bg-white text-xs text-sauge-800 peer-checked:bg-sauge-200 peer-checked:font-bold">Non</div>
+                    </label>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        `;
+      }).join('') + `
+        <div id="card-nordic-comment" class="step-card ${currentStep === zones.length ? '' : 'hidden'} bg-card rounded-3xl p-6 md:p-8 border border-sauge-300 shadow-xs space-y-5">
+          <div class="border-b border-sauge-200 pb-4">
+            <h3 class="font-serif-custom font-bold text-sauge-900 text-xl">Commentaire ou précision</h3>
+            <p class="text-sm text-sauge-600 mt-1">Vous pouvez ajouter une précision avant de passer au questionnaire suivant. Cette étape est facultative.</p>
+          </div>
+          <div class="bg-white/80 rounded-2xl p-4 md:p-5 border border-sauge-200 space-y-2">
+            <label for="nordic-comment" class="block text-sm font-semibold text-sauge-900">Votre commentaire</label>
+            <textarea id="nordic-comment" maxlength="5000" rows="6" class="w-full rounded-xl border border-sauge-300 p-3 text-sm text-sauge-900 focus:border-sauge-500 focus:outline-none" placeholder="Saisissez votre commentaire ou précision."></textarea>
+          </div>
+        </div>`;
+      bindMomentCheckboxes();
+      const commentInput = document.getElementById('nordic-comment');
+      if (commentInput) {
+        commentInput.value = nordicComment;
+        commentInput.addEventListener('input', () => {
+          nordicComment = commentInput.value;
+          saveNordicDraft();
+        });
+      }
+      zones.filter(zone => zone.hasSides).forEach(zone => {
+        const side = state[zone.id].side;
+        if (side) {
+          const input = document.querySelector(`input[name="side-${zone.id}"][value="${side}"]`);
+          if (input) input.checked = true;
+          renderSideIntensityControls(zone.id);
+        }
+      });
+    }
+
+    function bindMomentCheckboxes() {
+      document.querySelectorAll('.moment-checkbox').forEach((checkbox) => {
+        checkbox.onchange = function () {
+          handleMomentToggle(this.dataset.zoneId, this.dataset.moment);
+          saveNordicDraft();
+        };
+      });
+    }
+
+    // Navigation Step Handler
+    function changeStep(direction) {
+      if (direction > 0 && !isCurrentStepAnswered()) {
+        alert('Veuillez répondre à la question avant de continuer.');
+        return;
+      }
+
+      const cards = document.querySelectorAll('.step-card');
+      cards[currentStep].classList.add('hidden');
+      
+      currentStep += direction;
+      
+      if (currentStep < 0) currentStep = 0;
+      if (currentStep > zones.length) currentStep = zones.length;
+
+      cards[currentStep].classList.remove('hidden');
+      saveNordicDraft();
+      updateStepUI();
+    }
+
+    function updateStepUI() {
+      // Progress Bar & Counter
+      const totalSteps = zones.length + 1;
+      const progressPercent = ((currentStep + 1) / totalSteps) * 100;
+      document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+      document.getElementById('progress-text').innerText = currentStep === zones.length
+        ? `Commentaire ${totalSteps} / ${totalSteps}`
+        : `Zone ${currentStep + 1} / ${totalSteps}`;
+
+      // Disable/Enable Prev button
+      document.getElementById('btn-prev').disabled = (currentStep === 0);
+
+      // Toggle between Next button and Finish link on last question
+      const btnNext = document.getElementById('btn-next');
+      const btnFinish = document.getElementById('btn-finish');
+
+      if (currentStep === zones.length) {
+        btnNext.classList.add('hidden');
+        btnFinish.classList.remove('hidden');
+        btnFinish.classList.add('inline-flex');
+      } else {
+        btnNext.classList.remove('hidden');
+        btnFinish.classList.add('hidden');
+        btnFinish.classList.remove('inline-flex');
+      }
+    }
+
+    function isCurrentStepAnswered() {
+      if (currentStep === zones.length) return true;
+      const zone = zones[currentStep];
+      return isZoneAnswered(state[zone.id], zone);
+    }
+
+    function isZoneAnswered(zoneState, zone) {
+
+      if (zoneState.hasPain12m === null) return false;
+      if (zoneState.hasPain12m === 'non') return true;
+      if (zone.hasSides) {
+        const selectedSides = zoneState.side === 'deux' ? ['gauche', 'droit'] : [zoneState.side];
+        if (selectedSides.some(side => !side || !Number.isInteger(Number(zoneState.intensityBySide[side])) || Number(zoneState.intensityBySide[side]) < 0 || Number(zoneState.intensityBySide[side]) > 10)) return false;
+      } else if (!Number.isInteger(Number(zoneState.intensity)) || Number(zoneState.intensity) < 0 || Number(zoneState.intensity) > 10) {
+        return false;
+      }
+
+      const hasMomentSelected = Array.isArray(zoneState.moments) && zoneState.moments.some(moment => typeof moment === 'string' && moment.trim() !== '');
+      const hasWorkHindrance = zoneState.workHindrance !== null && zoneState.workHindrance !== undefined && zoneState.workHindrance !== '';
+      const hasPain7d = zoneState.hasPain7d !== null && zoneState.hasPain7d !== undefined && zoneState.hasPain7d !== '';
+
+      return hasMomentSelected && hasWorkHindrance && hasPain7d;
+    }
+
+    function finishQuiz() {
+      const firstIncompleteStep = zones.findIndex(zone => !isZoneAnswered(state[zone.id], zone));
+      if (firstIncompleteStep !== -1) {
+        currentStep = firstIncompleteStep;
+        document.querySelectorAll('.step-card').forEach((card, index) => card.classList.toggle('hidden', index !== currentStep));
+        updateStepUI();
+        alert('Veuillez répondre à toutes les zones avant de continuer.');
+        return false;
+      }
+
+      sessionStorage.setItem('tms_nordic', JSON.stringify(state));
+      nordicComment = document.getElementById('nordic-comment').value;
+      sessionStorage.setItem('tms_nordic_comment', nordicComment);
+      sessionStorage.removeItem('tms_nordic_draft');
+      return true;
+    }
+
+    // Toggle Pain 12m
+    function handlePain12mToggle(zoneId, val) {
+      state[zoneId].hasPain12m = val;
+      const subDiv = document.getElementById(`sub-${zoneId}`);
+      const badge = document.getElementById(`badge-${zoneId}`);
+      const card = document.getElementById(`card-${zoneId}`);
+
+      if (val === 'oui') {
+        subDiv.classList.remove('hidden');
+        badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200";
+        badge.innerText = "Douleur signalée";
+        
+        if (state[zoneId].intensity === 0 && !zones.find(zone => zone.id === zoneId).hasSides) {
+          handleIntensityChange(zoneId, 1);
+          const slider = card.querySelector('input[type=range]');
+          if (slider) slider.value = 1;
+        }
+      } else {
+        subDiv.classList.add('hidden');
+        badge.className = "px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200";
+        badge.innerText = "Aucune douleur";
+        state[zoneId].intensity = 0;
+        state[zoneId].side = null;
+        state[zoneId].intensityBySide = { gauche: 1, droit: 1 };
+        state[zoneId].moments = [];
+        state[zoneId].workHindrance = null;
+        state[zoneId].hasPain7d = null;
+        card.querySelectorAll(`input[name="side-${zoneId}"], input[name="hindrance-${zoneId}"], input[name="pain7d-${zoneId}"]`).forEach(input => {
+          input.checked = false;
+        });
+      }
+      if (val === 'oui' && zones.find(zone => zone.id === zoneId).hasSides) {
+        renderSideIntensityControls(zoneId);
+      }
+      saveNordicDraft();
+    }
+
+    function handleSideChange(zoneId, side) {
+      state[zoneId].side = side;
+      renderSideIntensityControls(zoneId);
+      saveNordicDraft();
+    }
+
+    function handleSideIntensityChange(zoneId, side, val) {
+      state[zoneId].intensityBySide[side] = parseInt(val, 10);
+      const colorData = getColorForIntensity(state[zoneId].intensityBySide[side]);
+      const badge = document.getElementById(`intensity-val-${zoneId}-${side}`);
+      if (badge) {
+        badge.innerText = `${state[zoneId].intensityBySide[side]} / 10 - ${colorData.label}`;
+        badge.className = `px-3 py-1 text-xs font-bold rounded-lg transition-colors ${colorData.bg} ${colorData.text}`;
+      }
+      state[zoneId].intensity = Math.max(
+        ...(state[zoneId].side === 'deux' ? ['gauche', 'droit'] : [side]).map(currentSide => Number(state[zoneId].intensityBySide[currentSide]) || 0)
+      );
+      saveNordicDraft();
+    }
+
+    // Change Intensity Slider
+    function handleIntensityChange(zoneId, val) {
+      const numericVal = parseInt(val, 10);
+      state[zoneId].intensity = numericVal;
+      
+      const colorData = getColorForIntensity(numericVal);
+      const valBadge = document.getElementById(`intensity-val-${zoneId}`);
+      
+      valBadge.innerText = `${numericVal} / 10 - ${colorData.label}`;
+      valBadge.className = `px-3 py-1 text-xs font-bold rounded-lg transition-colors ${colorData.bg} ${colorData.text}`;
+      saveNordicDraft();
+    }
+
+    // Toggle Moments Checkboxes
+    function handleMomentToggle(zoneId, moment) {
+      const momentsList = state[zoneId].moments;
+      const index = momentsList.indexOf(moment);
+      if (index > -1) {
+        momentsList.splice(index, 1);
+      } else {
+        momentsList.push(moment);
+      }
+
+      const zone = zones.find(item => item.id === zoneId);
+      if (zone && state[zoneId].hasPain12m === 'oui') {
+        state[zoneId].moments = Array.from(new Set(momentsList.filter(Boolean)));
+      }
+      saveNordicDraft();
+    }
+
+    // Initialize App
+    window.onload = function() {
+      restoreNordicDraft();
+      renderCards();
+      zones.forEach(zone => {
+        const zoneState = state[zone.id];
+        if (zoneState.hasPain12m) {
+          const painInput = document.querySelector(`input[name="pain12m-${zone.id}"][value="${zoneState.hasPain12m}"]`);
+          if (painInput) painInput.checked = true;
+          handlePain12mToggle(zone.id, zoneState.hasPain12m);
+        }
+        const slider = document.querySelector(`#card-${zone.id} input[type="range"]`);
+        if (slider && !zone.hasSides) slider.value = zoneState.intensity;
+        if (zoneState.hasPain12m === 'oui' && !zone.hasSides) handleIntensityChange(zone.id, zoneState.intensity);
+        zoneState.moments.forEach(moment => {
+          const checkbox = Array.from(document.querySelectorAll(`.moment-checkbox[data-zone-id="${zone.id}"]`)).find(input => input.dataset.moment === moment);
+          if (checkbox) checkbox.checked = true;
+        });
+        ['workHindrance', 'hasPain7d'].forEach(property => {
+          const groupName = property === 'workHindrance' ? 'hindrance' : 'pain7d';
+          const value = zoneState[property];
+          if (value) {
+            const input = document.querySelector(`input[name="${groupName}-${zone.id}"][value="${value}"]`);
+            if (input) input.checked = true;
+          }
+        });
+      });
+      document.querySelectorAll('.step-card').forEach((card, index) => card.classList.toggle('hidden', index !== currentStep));
+      updateStepUI();
+    };
+  </script>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div>
+        <p>© 2026 — Service APA. Tous droits réservés.</p>
+        <div class="rgpd-note">Ce site traite les réponses au questionnaire dans le cadre de la prévention des risques professionnels et de la santé au travail, conformément au RGPD et à la réglementation en vigueur.</div>
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="politique-confidentialite.html">Politique de confidentialité</a>
+        <a href="mailto:remyquelin@icloud.com">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

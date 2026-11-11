@@ -1,0 +1,1965 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';">
+  <title>Résultats de l'étude — TMS & Facteurs de Risque</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f4; --card-bg: #e5ece7; --card-border: #d2ddd6;
+      --text-main: #1c2d27; --text-muted: #53645d; --input-bg: #ffffff;
+      --input-border: #d0d7d3; --btn-bg: #8ba9a0; --btn-hover: #79978e; --btn-text: #ffffff;
+      --silhouette: #d7ddd9;
+      --risk-low: #4f9d64; --risk-med: #c9a227; --risk-high: #b23a34;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; }
+
+    .top-header { background-color: var(--card-bg); border-bottom: 1px solid var(--card-border); padding: 18px 20px; }
+    .top-header-inner { max-width: 1220px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .top-header h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.8rem; font-weight: 700; }
+    .top-header a { text-decoration: none; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; background: var(--input-bg); padding: 8px 16px; border-radius: 999px; border: 1px solid var(--input-border); transition: all 0.2s; }
+    .top-header a:hover { background: var(--btn-bg); color: var(--btn-text); border-color: var(--btn-bg); }
+    .admin-actions { display: flex; align-items: center; gap: 10px; }
+    .admin-actions button { font: inherit; cursor: pointer; color: var(--text-main); background: var(--input-bg); padding: 8px 16px; border-radius: 999px; border: 1px solid var(--input-border); }
+    .admin-actions button:hover { background: var(--btn-bg); color: var(--btn-text); border-color: var(--btn-bg); }
+
+    .container { max-width: 1220px; width: 100%; margin: 0 auto; padding: 32px 20px 48px; }
+
+    .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; align-items: center; }
+
+    .filter-btn {
+      background-color: var(--input-bg); border: 1px solid var(--input-border); color: var(--text-main);
+      padding: 10px 18px; border-radius: 999px; font-family: inherit; font-size: 0.92rem; cursor: pointer;
+    }
+    .filter-btn.active { background-color: var(--btn-bg); color: var(--btn-text); border-color: var(--btn-bg); }
+
+    select#sub-filter {
+      padding: 10px 14px; border-radius: 999px; border: 1px solid var(--input-border);
+      background-color: var(--input-bg); font-family: inherit; font-size: 0.92rem; color: var(--text-main);
+    }
+
+    .section-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.5rem; font-weight: 600; margin: 36px 0 16px; border-bottom: 2px solid var(--card-border); padding-bottom: 8px; }
+
+    .columns { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 32px; align-items: stretch; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+
+    .card { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 36px; display: flex; flex-direction: column; }
+    [hidden] { display: none !important; }
+
+    .card h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.4rem; font-weight: 600; margin-bottom: 4px; }
+    .card-subtitle { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 20px; }
+
+    .diagram-wrap { display: flex; justify-content: center; }
+    #bodySvg { width: 100%; max-width: 280px; }
+    .zone { transition: fill 0.25s; stroke: #ffffff; stroke-width: 1.5; }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin-top: 24px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted); }
+    .legend-swatch { width: 18px; height: 18px; border-radius: 5px; display: inline-block; }
+
+    .table-wrap { flex: 1; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--card-border); }
+    th { color: var(--text-muted); font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.03em; }
+    td.value { font-weight: 700; }
+    .dot { width: 12px; height: 12px; border-radius: 4px; display: inline-block; margin-right: 8px; vertical-align: middle; }
+
+    /* Styles spécifiques pour le Quizz 2 (Facteurs de Risque) */
+    .metric-row { margin-bottom: 16px; }
+    .metric-header { display: flex; justify-content: space-between; font-size: 0.92rem; font-weight: 500; margin-bottom: 6px; }
+    .progress-bar-bg { width: 100%; height: 12px; background-color: var(--input-bg); border-radius: 6px; overflow: hidden; border: 1px solid var(--input-border); }
+    .progress-bar-fill { height: 100%; border-radius: 6px; transition: width 0.3s ease; }
+
+    .badge { padding: 3px 8px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; color: #fff; }
+    .badge-low { background-color: var(--risk-low); }
+    .badge-med { background-color: var(--risk-med); }
+    .badge-high { background-color: var(--risk-high); }
+    .badge-empty { background-color: var(--text-muted); }
+
+    .factor-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .factor-item { background: var(--input-bg); padding: 12px 16px; border-radius: 8px; border: 1px solid var(--input-border); font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
+    .factor-item { display: block; }
+    .factor-title, .factor-answers { display: block; }
+    .factor-title { font-weight: 600; }
+    .factor-answers { margin-top: 6px; color: #a12e2a; font-size: 0.84rem; }
+    .factor-count { display: inline-block; margin-top: 6px; color: var(--text-muted); font-size: 0.8rem; }
+    .profile-card { padding: 24px 30px; margin-bottom: 24px; }
+    .profile-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .profile-item { min-width: 0; padding: 12px 14px; background: var(--input-bg); border-left: 3px solid var(--btn-bg); border-radius: 4px; }
+    .profile-label { display: block; color: var(--text-muted); font-size: 0.76rem; font-weight: 700; margin-bottom: 4px; }
+    .profile-value { display: block; overflow-wrap: anywhere; font-size: 1rem; }
+    .factor-item span { flex: 1; }
+    .factor-item strong { margin-left: 12px; white-space: nowrap; }
+    .grid-2 > .card, .individual-responses, .individual-responses-wrap { min-width: 0; }
+    .individual-responses { margin-top: 24px; }
+    .individual-responses h3 { font-size: 1rem; margin-bottom: 10px; }
+    .answers-toggle { display: flex; align-items: center; gap: 10px; margin-top: 18px; padding: 11px 13px; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+    .answers-toggle input { width: 18px; height: 18px; flex: 0 0 18px; accent-color: var(--btn-hover); }
+    .answer-person-heading th { background: var(--card-bg); color: var(--text-main); text-transform: none; font-size: 0.9rem; }
+    .individual-responses-wrap { overflow-x: auto; }
+    .individual-responses table { min-width: 480px; font-size: 0.85rem; }
+    .q2-question-category { display: inline-block; margin-top: 5px; padding: 2px 8px; border: 1px solid var(--input-border); border-radius: 999px; background-color: var(--card-bg); color: var(--text-muted); font-size: 0.75rem; font-weight: 700; }
+    .answer-alert { color: #a12e2a; font-weight: 700; }
+    .answer-ok { color: var(--text-main); }
+    .q3-summary { margin-top: 18px; }
+
+    .disclaimer { font-size: 0.82rem; color: var(--text-muted); background-color: var(--input-bg); border: 1px dashed var(--input-border); border-radius: 8px; padding: 12px 14px; margin-top: 24px; }
+    .site-footer {
+      background-color: #dfe8e3;
+      border-top: 1px solid var(--card-border);
+      margin-top: 32px;
+    }
+    .site-footer-inner {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .site-footer p {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+    .site-footer .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+    .site-footer a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .site-footer a:hover { text-decoration: underline; }
+    .rgpd-note {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+    }
+    .admin-link {
+      background-color: transparent;
+      border: 1px solid var(--input-border);
+      color: var(--text-main);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .admin-link:hover {
+      background-color: var(--input-bg);
+    }
+
+    @media (max-width: 800px) {
+      .columns, .grid-2 { grid-template-columns: 1fr; }
+      .profile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 500px) {
+      .profile-card { padding: 22px 18px; }
+      .profile-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-header">
+    <div class="top-header-inner">
+      <h1>Tableau de Bord — Synthèse des TMS & Risques</h1>
+      <div class="admin-actions">
+        <button id="btn-logout" type="button">Déconnexion</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <div class="filters">
+      <button class="filter-btn active" data-mode="global">Global</button>
+      <button class="filter-btn" data-mode="secteurs">Par secteur de travail</button>
+      <button class="filter-btn" data-mode="personnes">Par personne</button>
+      <select id="sub-filter" style="display:none;"></select>
+      <button class="filter-btn" id="btn-export" type="button" disabled>Exporter Excel</button>
+      <p id="export-error" class="disclaimer" role="alert" hidden></p>
+    </div>
+
+    <!-- ================= SECTION 1 : QUIZZ NORDIQUE (DOULEURS) ================= -->
+    <h2 class="section-title">1. Questionnaire Nordique</h2>
+    <div class="columns">
+
+      <div class="card">
+        <h2>Pain drawing</h2>
+        <p class="card-subtitle" id="cardSubtitle">Intensité moyenne des douleurs déclarées (chez les personnes concernées), par zone du corps — vue d'ensemble.</p>
+
+        <div class="diagram-wrap">
+          <svg id="bodySvg" viewBox="0 0 240 380" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="120" cy="36" r="24" fill="var(--silhouette)"/>
+            <rect x="108" y="56" width="24" height="16" fill="var(--silhouette)"/>
+            <rect x="78" y="74" width="84" height="130" rx="22" fill="var(--silhouette)"/>
+            <rect x="42" y="80" width="24" height="110" rx="12" fill="var(--silhouette)"/>
+            <rect x="174" y="80" width="24" height="110" rx="12" fill="var(--silhouette)"/>
+            <rect x="86" y="204" width="30" height="140" rx="15" fill="var(--silhouette)"/>
+            <rect x="124" y="204" width="30" height="140" rx="15" fill="var(--silhouette)"/>
+            <ellipse cx="101" cy="350" rx="16" ry="12" fill="var(--silhouette)"/>
+            <ellipse cx="139" cy="350" rx="16" ry="12" fill="var(--silhouette)"/>
+
+            <ellipse id="zone-cou" class="zone" cx="120" cy="66" rx="16" ry="13"/>
+            <ellipse id="zone-epaules" class="zone" cx="120" cy="88" rx="58" ry="20"/>
+            <rect id="zone-haut-dos" class="zone" x="98" y="95" width="44" height="45" rx="14"/>
+            <rect id="zone-bas-dos" class="zone" x="98" y="144" width="44" height="46" rx="14"/>
+            <circle id="zone-coude-g" class="zone" cx="48" cy="150" r="13"/>
+            <circle id="zone-coude-d" class="zone" cx="192" cy="150" r="13"/>
+            <ellipse id="zone-poignet-g" class="zone" cx="40" cy="195" rx="14" ry="18"/>
+            <ellipse id="zone-poignet-d" class="zone" cx="200" cy="195" rx="14" ry="18"/>
+            <ellipse id="zone-hanche" class="zone" cx="120" cy="196" rx="46" ry="18"/>
+            <circle id="zone-genou-g" class="zone" cx="100" cy="290" r="15"/>
+            <circle id="zone-genou-d" class="zone" cx="140" cy="290" r="15"/>
+            <ellipse id="zone-cheville-g" class="zone" cx="100" cy="345" rx="13" ry="16"/>
+            <ellipse id="zone-cheville-d" class="zone" cx="140" cy="345" rx="13" ry="16"/>
+          </svg>
+        </div>
+
+        <div class="legend" id="legend"></div>
+      </div>
+
+      <div class="card">
+        <h2>Détail par zone</h2>
+        <p class="card-subtitle">Valeurs correspondant au diagramme ci-contre.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Zone</th><th>Intensité moyenne (/10)</th><th id="responseDetailHeader">Détail des réponses (vue individuelle)</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= SECTION 2 : QUIZZ PSYCHOSOCIAL ET ORGANISATIONNEL ================= -->
+    <h2 class="section-title">2. Facteurs Psychosociaux & Ergonomiques</h2>
+    <div class="card profile-card" id="personProfile" hidden>
+      <h2>Profil de la personne</h2>
+      <p class="card-subtitle">Informations déclarées au début du questionnaire.</p>
+      <div class="profile-grid">
+        <div class="profile-item"><span class="profile-label">Nom et prénom</span><strong class="profile-value" id="profileName"></strong></div>
+        <div class="profile-item"><span class="profile-label">Latéralité</span><strong class="profile-value" id="profileLaterality"></strong></div>
+        <div class="profile-item"><span class="profile-label">Service</span><strong class="profile-value" id="profileService"></strong></div>
+        <div class="profile-item"><span class="profile-label">Fonction</span><strong class="profile-value" id="profileFunction"></strong></div>
+        <div class="profile-item"><span class="profile-label">Ancienneté</span><strong class="profile-value" id="profileSeniority"></strong></div>
+        <div class="profile-item"><span class="profile-label">Activité sportive hors CHU</span><strong class="profile-value" id="profileActivity"></strong></div>
+      </div>
+    </div>
+    <div class="grid-2">
+
+      <div class="card">
+        <h2>Scores par Dimension</h2>
+        <p class="card-subtitle">Scores indicatifs : favorable (&lt; 34 %), modéré (34 à 66 %), élevé (≥ 67 %). Les affirmations positives sont recodées pour que les valeurs élevées signalent un point à examiner. Ce questionnaire ne constitue pas un diagnostic.</p>
+        <div id="q2Metrics">
+          <!-- Les métriques s'affichent dynamiquement ici -->
+        </div>
+        <label class="answers-toggle" id="q2AnswersToggle" for="q2ShowAllAnswers">
+          <input type="checkbox" id="q2ShowAllAnswers" aria-controls="q2IndividualResponses">
+          <span>Afficher toutes les réponses du questionnaire 2 pour la sélection actuelle</span>
+        </label>
+        <div class="individual-responses" id="q2IndividualResponses" hidden>
+          <h3>Réponses détaillées du questionnaire 2</h3>
+          <div class="individual-responses-wrap">
+            <table>
+              <thead><tr><th>Question</th><th>Réponse</th></tr></thead>
+              <tbody id="q2AnswersBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Points à examiner</h2>
+        <p class="card-subtitle">Questions avec un score indicatif élevé (3 ou 4 sur 4), après prise en compte des affirmations positives.</p>
+        
+        <ul class="factor-list" id="q2Perturbations">
+          <!-- Liste des perturbateurs affichée ici -->
+        </ul>
+      </div>
+
+    </div>
+
+    <h2 class="section-title">3. Questionnaire rapide d’éducation à la santé</h2>
+    <div class="card">
+      <h2>Résultats par question</h2>
+      <p class="card-subtitle">Pourcentage de bonnes réponses et répartition des choix, selon la sélection actuelle.</p>
+      <div class="individual-responses-wrap">
+        <table>
+          <thead><tr><th>Question</th><th>Bonne réponse</th><th>Réponses analysées</th><th>Bonnes réponses</th><th>Répartition A / B / C / D</th></tr></thead>
+          <tbody id="q3SummaryBody"></tbody>
+        </table>
+      </div>
+      <label class="answers-toggle" for="q3ShowAllAnswers">
+        <input type="checkbox" id="q3ShowAllAnswers" aria-controls="q3IndividualResponses">
+        <span>Afficher toutes les réponses du questionnaire 3 pour la sélection actuelle</span>
+      </label>
+      <div class="individual-responses" id="q3IndividualResponses" hidden>
+        <h3>Réponses détaillées — questionnaire rapide d’éducation à la santé</h3>
+        <div class="individual-responses-wrap">
+          <table>
+            <thead><tr><th>Répondant</th><th>Question</th><th>Réponse donnée</th><th>Bonne réponse</th><th>Résultat</th></tr></thead>
+            <tbody id="q3AnswersBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <section id="commentsSection">
+      <h2 class="section-title">Commentaires et précisions</h2>
+      <div class="card" id="comments-card">
+        <p class="card-subtitle">Commentaires facultatifs laissés à la fin de chaque questionnaire, selon le filtre sélectionné.</p>
+        <div id="comments-list" class="space-y-4"></div>
+      </div>
+    </section>
+
+    <div class="disclaimer">Les résultats affichés correspondent uniquement aux réponses enregistrées dans la base de données.</div>
+
+  </div>
+
+  <script src="vendor/xlsx.full.min.js"></script>
+  <script>
+    const zoneOrder = ["cou","epaules","coudes","poignets","haut_dos","bas_dos","hanches","genoux","chevilles"];
+    const zoneLabels = { cou:"Cou", epaules:"Épaules", coudes:"Coudes", poignets:"Poignets / Mains", haut_dos:"Haut du dos", bas_dos:"Bas du dos", hanches:"Hanches / Cuisses", genoux:"Genoux", chevilles:"Chevilles / Pieds" };
+    const sportNames = value => typeof value === 'string'
+      ? value.split(/[,;\n]+/).map(sport => sport.trim()).filter(Boolean)
+      : [];
+    const q3Questions = [
+      { text: "L’activité physique correspond :", options: ["Uniquement au sport", "À tout mouvement corporel entraînant une dépense énergétique", "Uniquement à l’exercice réalisé en salle", "À la marche de plus de 30 minutes"], correct: 1 },
+      { text: "La sédentarité désigne principalement :", options: ["L’absence totale de sport", "Une activité physique insuffisante", "Une situation d’éveil en position assise, allongée ou statique, avec faible dépense énergétique", "Le travail de nuit"], correct: 2 },
+      { text: "Une personne peut-elle être active et sédentaire ?", options: ["Oui", "Non", "Seulement après 65 ans", "Seulement en cas d’obésité"], correct: 0 },
+      { text: "Chez l’adulte, la recommandation minimale d’activité aérobie modérée est de :", options: ["60 minutes par jour", "100 minutes par semaine", "150 minutes par semaine", "300 minutes par semaine"], correct: 2 },
+      { text: "Le volume hebdomadaire correspondant à un bénéfice supplémentaire est :", options: ["75 minutes d’activité modérée", "150 à 300 minutes d’activité modérée", "30 minutes d’activité légère", "10 000 pas obligatoires par jour"], correct: 1 },
+      { text: "Une alternative aux 150–300 minutes d’intensité modérée est :", options: ["20 minutes d’intensité élevée par semaine", "75–150 minutes d’intensité soutenue par semaine", "5 minutes d’étirements quotidiens", "Une séance mensuelle intensive"], correct: 1 },
+      { text: "Une activité d’intensité modérée entraîne habituellement :", options: ["Aucun changement respiratoire", "Un essoufflement permettant généralement de parler", "L’impossibilité de parler", "Une perte de connaissance"], correct: 1 },
+      { text: "Une activité d’intensité soutenue entraîne généralement :", options: ["Une respiration inchangée", "Un essoufflement important rendant la conversation difficile", "Une activité exclusivement musculaire", "Une position assise"], correct: 1 },
+      { text: "Le renforcement musculaire est recommandé :", options: ["Au moins 2 jours par semaine", "Une fois par mois", "Uniquement chez les sportifs", "Uniquement après 65 ans"], correct: 0 },
+      { text: "Les principaux groupes musculaires doivent-ils être sollicités lors du renforcement ?", options: ["Oui", "Non, un seul groupe suffit", "Seulement les membres inférieurs", "Seulement les abdominaux"], correct: 0 },
+      { text: "La marche rapide peut être :", options: ["Une activité physique d’intensité modérée", "Toujours une activité soutenue", "Une activité sédentaire", "Un exercice de renforcement uniquement"], correct: 0 },
+      { text: "Les déplacements à pied ou à vélo :", options: ["Ne comptent pas comme activité physique", "Comptent comme activité physique", "Comptent uniquement s’ils durent plus d’une heure", "Sont toujours du sport"], correct: 1 },
+      { text: "Les activités domestiques et professionnelles :", options: ["Peuvent contribuer au niveau global d’activité physique", "Ne sont jamais prises en compte", "Sont toujours sédentaires", "Ne sont utiles qu’après 65 ans"], correct: 0 },
+      { text: "Toute augmentation de l’activité physique :", options: ["Est inutile si les recommandations ne sont pas atteintes", "Peut déjà apporter un bénéfice pour la santé", "Est dangereuse", "Doit obligatoirement être intensive"], correct: 1 },
+      { text: "Chez une personne inactive, la reprise devrait être :", options: ["Progressive", "Maximale dès la première séance", "Évitée sans épreuve d’effort systématique", "Limitée aux étirements"], correct: 0 },
+      { text: "Pour limiter les effets de la sédentarité, il est pertinent de :", options: ["Rompre régulièrement les périodes prolongées assises", "Faire une seule séance sportive le week-end", "Rester debout sans bouger", "Ne bouger qu’après 8 heures assises"], correct: 0 },
+      { text: "La sédentarité prolongée peut augmenter le risque :", options: ["Cardiovasculaire et métabolique", "Uniquement infectieux", "Uniquement traumatique", "De myopie uniquement"], correct: 0 },
+      { text: "Une activité physique adaptée chez un patient chronique doit tenir compte :", options: ["De sa pathologie et de ses comorbidités", "De sa condition physique", "De ses capacités fonctionnelles", "De l’ensemble de ces éléments"], correct: 3 },
+      { text: "Le rôle d’un soignant peut comprendre :", options: ["Repérer l’inactivité et la sédentarité", "Valoriser les possibilités d’activité au quotidien", "Relayer des conseils adaptés et sécurisés", "Les trois réponses précédentes"], correct: 3 },
+      { text: "Concernant l’activité physique chez l’adulte :", options: ["Elle est contre-indiquée chez toute personne atteinte d’une maladie chronique", "Elle doit toujours être prescrite à intensité élevée", "Elle peut être adaptée à l’état de santé et aux capacités de la personne", "Elle ne concerne pas les patients hospitalisés"], correct: 2 }
+    ];
+    const q3AnswerLabel = (questionIndex, answer) => {
+      const value = Number(answer);
+      return Number.isInteger(value) && value >= 0 && value <= 3
+        ? `${String.fromCharCode(65 + value)}. ${q3Questions[questionIndex].options[value]}`
+        : 'Non renseigné';
+    };
+
+    const datasets = {
+      global: { max: 10, unit: "/10", value: {} },
+      secteurs: { max: 10, unit: "/10", options: {} },
+      personnes: { max: 10, unit: "/10", options: {} }
+    };
+
+    const datasetsQ2 = { global: null, secteurs: {}, personnes: {} };
+    const legacyQ2Dimensions = [
+      { label: "Organisation du travail", ids: Array.from({ length: 17 }, (_, index) => `S${index + 1}`) },
+      { label: "Facteurs personnels", ids: ["S18", "S19", "S20", "S21", "S22", "S23", "S24", "S25", "S28", "S29", "S30", "S31", "S34", "S35", "S36", "S38", "S42", "S43"] },
+      { label: "Stress et déconnexion", ids: ["S26", "S27", "S32", "S41", "S45", "S46"] },
+      { label: "Soutien et équilibre de vie", ids: ["S33", "S37", "S39", "S40", "S44"] }
+    ];
+    const version3Q2Dimensions = [
+      { label: "Organisation du travail", ids: ["S1", "S2", "S3", "S4", "S5", "S6", "S8", "S12", "S13", "S26"] },
+      { label: "Facteurs personnels", ids: ["S10", "S11", "S15", "S16", "S17", "S18", "S20", "S21", "S23"] },
+      { label: "Stress et déconnexion", ids: ["S14", "S19", "S27", "S30"] },
+      { label: "Soutien et équilibre de vie", ids: ["S7", "S9", "S22", "S24", "S25", "S28", "S29"] }
+    ];
+    const q2Questions = [
+      "Je suis constamment pressé(e) par le temps à cause d'une forte charge de travail",
+      "Je suis fréquemment interrompu(e) et dérangé(e) dans mon travail",
+      "J'ai beaucoup de responsabilités à mon travail",
+      "Je suis souvent contraint(e) à faire des heures supplémentaires",
+      "Mon travail exige des efforts physiques",
+      "Au cours des dernières années, mon travail est devenu plus exigeant",
+      "Au travail, je bénéficie d'un soutien satisfaisant dans les situations difficiles",
+      "Je suis en train de vivre une période où je m'attends à vivre un changement indésirable dans ma situation de travail",
+      "Ma position professionnelle actuelle correspond bien à ma formation",
+      "La plupart du temps, je prends les critiques très à cœur",
+      "Je suis souvent motivé(e) par l'ambition",
+      "La moindre interruption dans mon travail m'agace beaucoup",
+      "Au travail, il m'arrive fréquemment d'être pressé(e) par le temps",
+      "Je commence à penser à des problèmes de travail dès que je me lève le matin",
+      "Je suis irrité(e) lorsque je ne parviens pas à accomplir au mieux une tâche",
+      "Je ne laisse personne faire mon travail",
+      "Je suis particulièrement déçu(e) lorsque mon travail n'est pas apprécié à sa juste valeur",
+      "Lorsqu'une personne ne comprend pas assez vite, je peux m'emporter",
+      "Quand je rentre à la maison, j'arrive facilement à me décontracter et à oublier tout ce qui concerne mon travail",
+      "Mes proches disent que je me sacrifie trop pour mon travail",
+      "Les gens ont confiance dans ma capacité à mener à bien les tâches difficiles",
+      "Je mobilise toute mon énergie pour toujours avoir le contrôle de la situation",
+      "Pour moi, la famille ou ma vie privée passent toujours avant le travail",
+      "Cela ne me gêne pas d'être interrompu(e) dans mes tâches quotidiennes",
+      "Je veux toujours faire plus de choses que je ne peux en accomplir",
+      "Le travail me trotte encore dans la tête lorsque je vais au lit",
+      "Le moindre compliment stimule vraiment ma motivation",
+      "De temps en temps, j'aime quand d'autres me détournent de mon travail",
+      "Quand je remets à plus tard quelque chose que je devrais faire le jour même, j'ai du mal à dormir le soir"
+    ];
+    const version3Q2Questions = [
+      ...q2Questions.slice(0, 20),
+      "Je n'ai le sentiment d'avoir réussi que lorsque j'ai accompli ma tâche mieux que je pensais faire",
+      ...q2Questions.slice(20)
+    ];
+    const legacyQ2Questions = [
+      "Je suis constamment pressé(e) par le temps à cause d'une forte charge de travail",
+      "Je suis fréquemment interrompu(e) et dérangé(e) dans mon travail",
+      "J'ai beaucoup de responsabilités à mon travail",
+      "Je suis souvent contraint(e) à faire des heures supplémentaires",
+      "Mon travail exige des efforts physiques",
+      "Au cours des dernières années, mon travail est devenu plus exigeant",
+      "Je reçois le respect que je mérite de mes supérieurs",
+      "Je reçois le respect que je mérite de mes collègues",
+      "Au travail, je bénéficie d'un soutien satisfaisant dans les situations difficiles",
+      "On me traite injustement à mon travail",
+      "Je suis en train de vivre une période où je m'attends à vivre un changement indésirable dans ma situation de travail",
+      "Mes perspectives de promotion sont faibles",
+      "Ma sécurité d'emploi est menacée",
+      "Ma position professionnelle actuelle correspond bien à ma formation",
+      "Vu tous mes efforts, je reçois le respect et l'estime que je mérite à mon travail",
+      "Vu tous mes efforts, mes perspectives de promotion sont satisfaisantes",
+      "Vu tous mes efforts, mon salaire est satisfaisant",
+      "La plupart du temps, je prends les critiques très à cœur",
+      "Je suis souvent motivé(e) par l'ambition",
+      "La moindre interruption dans mon travail m'agace beaucoup",
+      "Si quelque chose doit être bien fait, il vaut mieux que je le fasse moi-même",
+      "J'aime prouver que certaines personnes ont tort",
+      "Être toujours un peu meilleur ou plus rapide que les autres est une sorte de jeu pour moi",
+      "Je peux vraiment m'énerver lorsque quelqu'un m'empêche de faire ce que je suis censé(e) faire",
+      "Les autres font que je m'énerve plus souvent que je le voudrais",
+      "Au travail, il m'arrive fréquemment d'être pressé(e) par le temps",
+      "Je commence à penser à des problèmes de travail dès que je me lève le matin",
+      "Je suis irrité(e) lorsque je ne parviens pas à accomplir au mieux une tâche",
+      "Je ne laisse personne faire mon travail",
+      "Je suis particulièrement déçu(e) lorsque mon travail n'est pas apprécié à sa juste valeur",
+      "Lorsqu'une personne ne comprend pas assez vite, je peux m'emporter",
+      "Quand je rentre à la maison, j'arrive facilement à me décontracter et à oublier tout ce qui concerne mon travail",
+      "Mes proches disent que je me sacrifie trop pour mon travail",
+      "Je n'ai le sentiment d'avoir réussi que lorsque j'ai accompli ma tâche mieux que je pensais faire",
+      "Les gens ont confiance dans ma capacité à mener à bien les tâches difficiles",
+      "Je mobilise toute mon énergie pour toujours avoir le contrôle de la situation",
+      "Pour moi, la famille ou ma vie privée passent toujours avant le travail",
+      "Cela me met en rage lorsqu'un collègue remet en question mes compétences",
+      "Cela ne me gêne pas d'être interrompu(e) dans mes tâches quotidiennes",
+      "Je veux toujours faire plus de choses que je ne peux en accomplir",
+      "Le travail me trotte encore dans la tête lorsque je vais au lit",
+      "Le moindre compliment stimule vraiment ma motivation",
+      "Je ne me sens pas irrité(e) quand d'autres font mieux que moi",
+      "De temps en temps, j'aime quand d'autres me détournent de mon travail",
+      "En pensée, je suis déjà prêt(e) à accomplir ma prochaine tâche",
+      "Quand je remets à plus tard quelque chose que je devrais faire le jour même, j'ai du mal à dormir le soir"
+    ];
+    const agreementLabels = {
+      1: '1 — Pas du tout d’accord',
+      2: '2 — Plutôt pas d’accord',
+      3: '3 — Plutôt d’accord',
+      4: '4 — Tout à fait d’accord'
+    };
+    const legacyPerturbationLabels = {
+      1: '1 — Pas du tout perturbé(e)',
+      2: '2 — Un peu perturbé(e)',
+      3: '3 — Perturbé(e)',
+      4: '4 — Très perturbé(e)'
+    };
+    const reverseScoredQuestionIds = new Set([
+      'S7', 'S9', 'S19', 'S21', 'S23', 'S24', 'S27'
+    ]);
+    const version3ReverseScoredQuestionIds = new Set([
+      'S7', 'S9', 'S19', 'S22', 'S24', 'S25', 'S28'
+    ]);
+    const legacyReverseScoredQuestionIds = new Set([
+      'S7', 'S8', 'S9', 'S14', 'S15', 'S16', 'S17',
+      'S32', 'S35', 'S37', 'S39', 'S43'
+    ]);
+    const q2Dimensions = [
+      { label: "Organisation du travail", ids: ["S1", "S2", "S3", "S4", "S5", "S6", "S8", "S12", "S13", "S25"] },
+      { label: "Facteurs personnels", ids: ["S10", "S11", "S15", "S16", "S17", "S18", "S20", "S22"] },
+      { label: "Stress et déconnexion", ids: ["S14", "S19", "S26", "S29"] },
+      { label: "Soutien et équilibre de vie", ids: ["S7", "S9", "S21", "S23", "S24", "S27", "S28"] }
+    ];
+    const pss14Questions = [
+      "Durant le mois passé, combien de fois avez-vous été contrarié(e) par quelque chose d’inattendu ou imprévu ?",
+      "Durant le mois passé, combien de fois avez-vous eu le sentiment de ne pas pouvoir contrôler les aspects importants de votre vie ?",
+      "Durant le mois passé, combien de fois vous êtes-vous senti(e) nerveux(se) et « stressé(e) » ?",
+      "Durant le mois passé, combien de fois avez-vous réussi à régler de manière satisfaisante les problèmes et les ennuis de la vie de tous les jours ?",
+      "Durant le mois passé, combien de fois avez-vous eu le sentiment de surmonter efficacement des changements importants qui survenaient dans votre vie ?",
+      "Durant le mois passé, combien de fois avez-vous eu confiance en votre capacité à gérer vos problèmes personnels ?",
+      "Durant le mois passé, combien de fois avez-vous eu le sentiment que les choses allaient comme vous le vouliez ?",
+      "Durant le mois passé, combien de fois avez-vous pensé que vous ne pourriez pas venir à bout de tout ce que vous aviez à faire ?",
+      "Durant le mois passé, combien de fois avez-vous été capable de contrôler les irritations que vous éprouvez dans votre vie ?",
+      "Durant le mois passé, combien de fois avez-vous eu le sentiment de vraiment « dominer la situation » ?",
+      "Durant le mois passé, combien de fois vous êtes-vous mis(e) en colère à cause de choses qui arrivaient et sur lesquelles vous n’aviez pas de contrôle ?",
+      "Durant le mois passé, combien de fois vous êtes-vous retrouvé(e) en train de penser aux choses que vous aviez à faire ?",
+      "Durant le mois passé, combien de fois avez-vous pu contrôler la manière dont vous passez votre temps ?",
+      "Durant le mois passé, combien de fois avez-vous eu le sentiment que les difficultés s’accumulaient tellement que vous ne pourriez pas les surmonter ?"
+    ];
+    const pss14ReverseScoredQuestionIds = new Set(['S4', 'S5', 'S6', 'S7', 'S9', 'S10', 'S13']);
+    const pss14Dimension = [
+      { label: "Stress perçu", ids: Array.from({ length: 14 }, (_, index) => `S${index + 1}`) }
+    ];
+    const pss14FrequencyLabels = {
+      0: '0 — Jamais',
+      1: '1 — Presque jamais',
+      2: '2 — Parfois',
+      3: '3 — Assez souvent',
+      4: '4 — Très souvent'
+    };
+    const pss10Questions = [
+      pss14Questions[0],
+      pss14Questions[1],
+      pss14Questions[2],
+      pss14Questions[5],
+      pss14Questions[6],
+      pss14Questions[7],
+      pss14Questions[8],
+      pss14Questions[9],
+      pss14Questions[10],
+      pss14Questions[13]
+    ];
+    const pss10ReverseScoredQuestionIds = new Set(['S4', 'S5', 'S7', 'S8']);
+    const pss10Dimension = [
+      { label: "Stress perçu", ids: Array.from({ length: 10 }, (_, index) => `S${index + 1}`) }
+    ];
+
+    function q2VersionLabel(version) {
+      if (version >= 6) return 'Stress perçu — 10 questions';
+      if (version >= 5) return 'Stress perçu — 14 questions';
+      return version >= 4 ? 'Questionnaire actuel' : `Version ${version}`;
+    }
+
+    function q2AnswerLabel(questionId, score, version) {
+      if (version >= 6) {
+        const frequency = pss10ReverseScoredQuestionIds.has(questionId) ? 4 - score : score;
+        return pss14FrequencyLabels[frequency] || score;
+      }
+      if (version >= 5) {
+        const frequency = pss14ReverseScoredQuestionIds.has(questionId) ? 4 - score : score;
+        return pss14FrequencyLabels[frequency] || score;
+      }
+      return version >= 2
+        ? agreementLabels[score] || score
+        : legacyPerturbationLabels[score] || score;
+    }
+
+    function q2QuestionsForVersion(version) {
+      if (version >= 6) return pss10Questions;
+      if (version >= 5) return pss14Questions;
+      if (version >= 4) return q2Questions;
+      return version >= 3 ? version3Q2Questions : legacyQ2Questions;
+    }
+
+    function q2DimensionsForVersion(version) {
+      if (version >= 6) return pss10Dimension;
+      if (version >= 5) return pss14Dimension;
+      if (version >= 4) return q2Dimensions;
+      return version >= 3 ? version3Q2Dimensions : legacyQ2Dimensions;
+    }
+
+    const bands = [
+      { max: 0, color: "#cfe6db", label: "0/10 — Aucune douleur" },
+      { max: 20, color: "#4f9d64", label: "1–2/10 — Faible" },
+      { max: 50, color: "#c9a227", label: "3–5/10 — Modérée" },
+      { max: 80, color: "#c1652f", label: "6–8/10 — Intense" },
+      { max: 100, color: "#b23a34", label: "9–10/10 — Extrême" }
+    ];
+
+    function colorFor(value, max) {
+      const pct = (value / max) * 100;
+      return bands.find(b => pct <= b.max).color;
+    }
+
+    function average(values) {
+      const valid = values.filter(value => Number.isFinite(value));
+      return valid.length ? Math.round(valid.reduce((sum, value) => sum + value, 0) / valid.length) : 0;
+    }
+
+    function intensityForAnswer(answer) {
+      if (answer && answer.side === 'deux' && answer.intensityBySide) {
+        const sideScores = ['gauche', 'droit']
+          .map(side => Number(answer.intensityBySide[side]))
+          .filter(value => Number.isFinite(value) && value >= 1 && value <= 10);
+        if (sideScores.length) return sideScores.reduce((sum, value) => sum + value, 0) / sideScores.length;
+      }
+      const value = Number(answer && answer.intensity);
+      return Number.isFinite(value) && value >= 1 && value <= 10 ? value : null;
+    }
+
+    function meanPainIntensity(responses, zone, includeNoPain = false) {
+      const intensities = responses
+        .map(person => person.nordic && person.nordic[zone])
+        .filter(answer => answer && (answer.hasPain12m === 'oui' || (includeNoPain && answer.hasPain12m === 'non')))
+        .map(answer => answer.hasPain12m === 'non' ? 0 : intensityForAnswer(answer))
+        .filter(value => value !== null);
+      return intensities.length
+        ? Number((intensities.reduce((sum, value) => sum + value, 0) / intensities.length).toFixed(1))
+        : 0;
+    }
+
+    function numericAnswer(value) {
+      if (value === null || value === undefined || value === '') return null;
+      const number = Number(value);
+      return Number.isFinite(number) ? number : null;
+    }
+
+    function q2RiskCategory(value) {
+      if (value === null || value === undefined) return 'Non renseigné';
+      if (value >= 67) return 'Élevé';
+      if (value >= 34) return 'Modéré';
+      return 'Favorable';
+    }
+
+    function riskScoreForAnswer(questionId, answer, scaleVersion) {
+      const score = numericAnswer(answer && typeof answer === 'object' ? answer.perturb : answer);
+      if (scaleVersion >= 5) {
+        return score !== null && Number.isInteger(score) && score >= 0 && score <= 4 ? score : null;
+      }
+      if (score === null || !Number.isInteger(score) || score < 1 || score > 4) return null;
+      const reverseIds = scaleVersion >= 4
+        ? reverseScoredQuestionIds
+        : (scaleVersion >= 3
+          ? version3ReverseScoredQuestionIds
+          : (scaleVersion >= 2 ? legacyReverseScoredQuestionIds : null));
+      return reverseIds && reverseIds.has(questionId) ? 5 - score : score;
+    }
+
+    function q2Data(items) {
+      const versions = items.length
+        ? [...new Set(items.map(item => Number(item.psychosocial_scale_version) || 1))]
+        : [6];
+      const metrics = versions.flatMap(version => {
+        const versionItems = items.filter(item => (Number(item.psychosocial_scale_version) || 1) === version);
+        const versionLabel = q2VersionLabel(version);
+        return q2DimensionsForVersion(version).map(dimension => {
+          const values = [];
+          versionItems.forEach(item => {
+            const scores = dimension.ids
+              .map(id => riskScoreForAnswer(id, item.psychosocial && item.psychosocial[id], version))
+              .filter(score => score !== null);
+            if (scores.length) {
+              values.push(scores.reduce((sum, score) => sum + score, 0) / scores.length / 4 * 100);
+            }
+          });
+          const value = values.length ? average(values) : null;
+          const risk = value === null ? 'empty' : (value >= 67 ? 'high' : (value >= 34 ? 'med' : 'low'));
+          return { label: `${version === 3 ? '' : `${versionLabel} — `}${dimension.label}`, value, risk, category: q2RiskCategory(value) };
+        });
+      });
+
+      const counts = {};
+      items.forEach(item => {
+        const version = Number(item.psychosocial_scale_version) || 1;
+        const versionQuestions = q2QuestionsForVersion(version);
+        versionQuestions.forEach((_, index) => {
+          const id = `S${index + 1}`;
+          const answer = item.psychosocial && item.psychosocial[id];
+          const score = riskScoreForAnswer(id, answer, version);
+          if (score !== null && score >= 3) {
+            const key = `${version}:${id}`;
+            if (!counts[key]) counts[key] = { total: 0, byScore: {}, version, id };
+            counts[key].total += 1;
+            counts[key].byScore[score] = (counts[key].byScore[score] || 0) + 1;
+          }
+        });
+      });
+      const flaggedQuestions = Object.values(counts).map(result => ({
+        factor: `${q2VersionLabel(result.version)} — ${result.id} — ${q2QuestionsForVersion(result.version)[Number(result.id.slice(1)) - 1] || result.id}`,
+        count: result.total,
+        answers: Object.entries(result.byScore).map(([score, count]) => `Score indicatif ${score}/4 (${count})`)
+      }));
+      if (!flaggedQuestions.length) flaggedQuestions.push({ factor: 'Aucun point à examiner selon ce score indicatif', count: 0 });
+      return { metrics, perturbations: flaggedQuestions };
+    }
+
+    const zoneToIds = {
+      cou: ["zone-cou"], epaules: ["zone-epaules"], coudes: ["zone-coude-g","zone-coude-d"],
+      poignets: ["zone-poignet-g","zone-poignet-d"], haut_dos: ["zone-haut-dos"], bas_dos: ["zone-bas-dos"], hanches: ["zone-hanche"],
+      genoux: ["zone-genou-g","zone-genou-d"], chevilles: ["zone-cheville-g","zone-cheville-d"]
+    };
+
+    const legendEl = document.getElementById('legend');
+    bands.forEach(b => {
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML = '<span class="legend-swatch" style="background:' + b.color + '"></span>' + b.label;
+      legendEl.appendChild(item);
+    });
+
+    const subFilter = document.getElementById('sub-filter');
+    const subtitleEl = document.getElementById('cardSubtitle');
+    const tableBody = document.getElementById('tableBody');
+    const q2MetricsEl = document.getElementById('q2Metrics');
+    const q2PerturbationsEl = document.getElementById('q2Perturbations');
+    const personProfileEl = document.getElementById('personProfile');
+    const commentsSectionEl = document.getElementById('commentsSection');
+    const q2AnswersToggleEl = document.getElementById('q2AnswersToggle');
+    const responseDetailHeaderEl = document.getElementById('responseDetailHeader');
+    const profileNameEl = document.getElementById('profileName');
+    const profileLateralityEl = document.getElementById('profileLaterality');
+    const profileServiceEl = document.getElementById('profileService');
+    const profileFunctionEl = document.getElementById('profileFunction');
+    const profileSeniorityEl = document.getElementById('profileSeniority');
+    const profileActivityEl = document.getElementById('profileActivity');
+    const q2IndividualResponsesEl = document.getElementById('q2IndividualResponses');
+    const q2AnswersBody = document.getElementById('q2AnswersBody');
+    const q2ShowAllAnswersEl = document.getElementById('q2ShowAllAnswers');
+    const q3SummaryBody = document.getElementById('q3SummaryBody');
+    const q3AnswersBody = document.getElementById('q3AnswersBody');
+    const q3ShowAllAnswersEl = document.getElementById('q3ShowAllAnswers');
+    const q3IndividualResponsesEl = document.getElementById('q3IndividualResponses');
+    const commentsListEl = document.getElementById('comments-list');
+    let loadedResponses = [];
+    let q2AnswerResponses = [];
+    let currentMode = 'global';
+
+    function renderComments(responses) {
+      commentsListEl.innerHTML = '';
+      let commentCount = 0;
+      responses.forEach(person => {
+        const comments = [
+          ['Questionnaire Nordique', person.nordic_comment],
+          ['Questionnaire psychosocial', person.psychosocial_comment]
+        ].filter(([, comment]) => typeof comment === 'string' && comment.trim() !== '');
+        if (!comments.length) return;
+
+        const entry = document.createElement('article');
+        entry.className = 'rounded-xl border border-sauge-200 bg-white p-4';
+        const heading = document.createElement('h3');
+        heading.className = 'font-semibold text-sauge-900';
+        heading.textContent = `${person.prenom} ${person.nom}`;
+        entry.appendChild(heading);
+        comments.forEach(([questionnaire, comment]) => {
+          const label = document.createElement('p');
+          label.className = 'mt-3 text-sm font-semibold text-sauge-700';
+          label.textContent = questionnaire;
+          const text = document.createElement('p');
+          text.className = 'mt-1 whitespace-pre-wrap break-words text-sm text-sauge-800';
+          text.textContent = comment.trim();
+          entry.append(label, text);
+          commentCount += 1;
+        });
+        commentsListEl.appendChild(entry);
+      });
+      if (!commentCount) {
+        const empty = document.createElement('p');
+        empty.className = 'text-sm text-sauge-600';
+        empty.textContent = 'Aucun commentaire n’a été renseigné pour cette sélection.';
+        commentsListEl.appendChild(empty);
+      }
+    }
+
+    document.getElementById('btn-logout').addEventListener('click', async () => {
+      try {
+        await fetch('api.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'logout' }),
+          credentials: 'same-origin'
+        });
+      } finally {
+        window.location.href = 'accueil.html';
+      }
+    });
+
+    function renderIndividualAnswers(responses) {
+      q2AnswersBody.innerHTML = '';
+      responses.forEach(item => {
+        const personRow = document.createElement('tr');
+        personRow.className = 'answer-person-heading';
+        const personCell = document.createElement('th');
+        personCell.colSpan = 2;
+        personCell.scope = 'rowgroup';
+        personCell.textContent = `${item.prenom} ${item.nom}`;
+        personRow.appendChild(personCell);
+        q2AnswersBody.appendChild(personRow);
+
+        const scaleVersion = Number(item.psychosocial_scale_version) || 1;
+        q2QuestionsForVersion(scaleVersion).forEach((question, index) => {
+          const questionId = `S${index + 1}`;
+          const dimension = q2DimensionsForVersion(scaleVersion).find(group => group.ids.includes(questionId));
+          const answer = item.psychosocial && item.psychosocial[questionId];
+          const score = numericAnswer(answer && typeof answer === 'object' ? answer.perturb : answer);
+          const riskScore = riskScoreForAnswer(questionId, answer, scaleVersion);
+          const answerLabel = score === null ? 'Non renseigné' : q2AnswerLabel(questionId, score, scaleVersion);
+          const row = document.createElement('tr');
+          const questionCell = document.createElement('td');
+          const answerCell = document.createElement('td');
+          const questionText = document.createElement('div');
+          const categoryLabel = document.createElement('span');
+          questionText.textContent = `${questionId} — ${question}`;
+          categoryLabel.className = 'q2-question-category';
+          categoryLabel.textContent = dimension ? dimension.label : 'Catégorie non définie';
+          questionCell.append(questionText, categoryLabel);
+          answerCell.textContent = score === null
+            ? answerLabel
+            : `${answerLabel} · ${riskScore >= 3 ? 'Score indicatif à examiner' : 'Score sous le seuil indicatif'}`;
+          answerCell.className = riskScore !== null && riskScore >= 3 ? 'answer-alert' : 'answer-ok';
+          row.append(questionCell, answerCell);
+          q2AnswersBody.appendChild(row);
+        });
+      });
+    }
+
+    function renderQ3(responses) {
+      q3SummaryBody.innerHTML = '';
+      q3AnswersBody.innerHTML = '';
+      q3Questions.forEach((question, questionIndex) => {
+        const answerCounts = [0, 0, 0, 0];
+        let answeredCount = 0;
+        let correctCount = 0;
+        responses.forEach(person => {
+          const answer = Number(person.activityKnowledge && person.activityKnowledge[`Q${questionIndex + 1}`]);
+          const validAnswer = Number.isInteger(answer) && answer >= 0 && answer <= 3;
+          if (validAnswer) {
+            answerCounts[answer] += 1;
+            answeredCount += 1;
+            if (answer === question.correct) correctCount += 1;
+          }
+          const row = document.createElement('tr');
+          const personCell = document.createElement('td');
+          const questionCell = document.createElement('td');
+          const answerCell = document.createElement('td');
+          const correctCell = document.createElement('td');
+          const resultCell = document.createElement('td');
+          personCell.textContent = `${person.prenom} ${person.nom}`;
+          questionCell.textContent = `Q${questionIndex + 1} — ${question.text}`;
+          answerCell.textContent = q3AnswerLabel(questionIndex, answer);
+          correctCell.textContent = `${String.fromCharCode(65 + question.correct)}. ${question.options[question.correct]}`;
+          resultCell.textContent = validAnswer ? (answer === question.correct ? 'Correcte' : 'Incorrecte') : 'Non renseigné';
+          resultCell.className = validAnswer && answer === question.correct ? 'answer-ok' : 'answer-alert';
+          row.append(personCell, questionCell, answerCell, correctCell, resultCell);
+          q3AnswersBody.appendChild(row);
+        });
+
+        const row = document.createElement('tr');
+        const questionCell = document.createElement('td');
+        const correctAnswerCell = document.createElement('td');
+        const answeredCell = document.createElement('td');
+        const correctCountCell = document.createElement('td');
+        const distributionCell = document.createElement('td');
+        questionCell.textContent = `Q${questionIndex + 1} — ${question.text}`;
+        correctAnswerCell.textContent = `${String.fromCharCode(65 + question.correct)}. ${question.options[question.correct]}`;
+        answeredCell.textContent = `${answeredCount} / ${responses.length}`;
+        correctCountCell.textContent = answeredCount
+          ? `${correctCount} / ${answeredCount} (${Math.round(correctCount / answeredCount * 100)} %)`
+          : 'Aucune réponse';
+        distributionCell.textContent = answerCounts.map((count, index) => `${String.fromCharCode(65 + index)} : ${count}`).join(' · ');
+        row.append(questionCell, correctAnswerCell, answeredCell, correctCountCell, distributionCell);
+        q3SummaryBody.appendChild(row);
+      });
+
+      q3ShowAllAnswersEl.disabled = responses.length === 0;
+      q3IndividualResponsesEl.hidden = !q3ShowAllAnswersEl.checked || responses.length === 0;
+    }
+
+    function renderQ2(key) {
+      let data = datasetsQ2.global || { metrics: [], perturbations: [] };
+      if (currentMode !== 'global' && datasetsQ2[currentMode]) {
+        const modeData = key && datasetsQ2[currentMode][key] ? datasetsQ2[currentMode][key] : data;
+        data = modeData;
+      }
+
+      if (!Array.isArray(data.metrics)) data.metrics = [];
+      if (!Array.isArray(data.perturbations)) data.perturbations = [];
+
+      const person = currentMode === 'personnes'
+        ? loadedResponses.find(item => `${item.prenom} ${item.nom}` === key)
+        : null;
+      q2AnswerResponses = currentMode === 'personnes'
+        ? (person ? [person] : [])
+        : (currentMode === 'secteurs' ? loadedResponses.filter(item => item.service === key) : loadedResponses);
+      const isGlobal = currentMode === 'global';
+      commentsSectionEl.hidden = isGlobal;
+      if (!isGlobal) renderComments(q2AnswerResponses);
+      personProfileEl.hidden = !person;
+      q2AnswersToggleEl.hidden = isGlobal;
+      q2ShowAllAnswersEl.disabled = q2AnswerResponses.length === 0;
+      q2IndividualResponsesEl.hidden = isGlobal || !q2ShowAllAnswersEl.checked || q2AnswerResponses.length === 0;
+      if (!q2IndividualResponsesEl.hidden) renderIndividualAnswers(q2AnswerResponses);
+      if (person) {
+        const lateralityLabels = { droitier: 'Droitier(ère)', gaucher: 'Gaucher(ère)', ambidextre: 'Ambidextre' };
+        const seniorityLabels = { moins_1_an: "Moins d'un an", '1_5_ans': '1 à 5 ans', '5_10_ans': '5 à 10 ans', plus_10_ans: 'Plus de 10 ans' };
+        profileNameEl.textContent = `${person.prenom} ${person.nom}`;
+        profileLateralityEl.textContent = lateralityLabels[person.lateralite] || person.lateralite;
+        profileServiceEl.textContent = person.service;
+        profileFunctionEl.textContent = person.fonction || 'Non renseignée';
+        profileSeniorityEl.textContent = seniorityLabels[person.anciennete] || person.anciennete;
+        const activity = person.activity || {};
+        const listedSports = sportNames(activity.sportType);
+        const weeklySessions = Number(activity.sessionsPerWeek);
+        profileActivityEl.textContent = activity.sportPracticed === 'oui'
+          ? `${listedSports.join(' · ') || 'Sport non précisé'} — ${weeklySessions || 'Fréquence non précisée'} séance${weeklySessions > 1 ? 's' : ''}/semaine${activity.minutesPerSession ? `, ${activity.minutesPerSession} min/séance` : ''}`
+          : activity.sportPracticed === 'non' ? 'Ne pratique pas de sport en dehors du CHU' : 'Non renseigné';
+      } else {
+        profileNameEl.textContent = '';
+        profileLateralityEl.textContent = '';
+        profileServiceEl.textContent = '';
+        profileFunctionEl.textContent = '';
+        profileSeniorityEl.textContent = '';
+        profileActivityEl.textContent = '';
+      }
+
+      // Rendu des métriques (jauges)
+      q2MetricsEl.innerHTML = '';
+      data.metrics.forEach(m => {
+        let badgeClass = m.risk === 'empty' ? 'badge-empty' : (m.risk === 'high' ? 'badge-high' : (m.risk === 'med' ? 'badge-med' : 'badge-low'));
+        let color = m.risk === 'high' ? 'var(--risk-high)' : (m.risk === 'med' ? 'var(--risk-med)' : 'var(--risk-low)');
+        let badgeLabel = m.risk === 'empty' ? 'Non renseigné' : (m.risk === 'high' ? 'Élevé' : (m.risk === 'med' ? 'Modéré' : 'Favorable'));
+        const displayValue = m.value === null ? '—' : `${m.value}%`;
+        const barWidth = m.value === null ? 0 : m.value;
+
+        const row = document.createElement('div');
+        row.className = 'metric-row';
+        row.innerHTML = `
+          <div class="metric-header">
+            <span>${m.label}</span>
+            <div>
+              <span style="font-weight:700; margin-right:8px;">${displayValue}</span>
+              <span class="badge ${badgeClass}">${badgeLabel}</span>
+            </div>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: ${barWidth}%; background-color: ${color};"></div>
+          </div>
+        `;
+        q2MetricsEl.appendChild(row);
+      });
+
+      // Rendu des perturbations
+      q2PerturbationsEl.innerHTML = '';
+      data.perturbations.forEach(p => {
+        const item = document.createElement('li');
+        item.className = 'factor-item';
+        const factor = document.createElement('span');
+        const answers = document.createElement('span');
+        const count = document.createElement('strong');
+        factor.className = 'factor-title';
+        answers.className = 'factor-answers';
+        count.className = 'factor-count';
+        factor.textContent = p.factor;
+        answers.textContent = p.answers ? `Réponse(s) : ${p.answers.join(' · ')}` : '';
+        count.textContent = `${p.count} personne${p.count > 1 ? 's' : ''}`;
+        item.append(factor, count);
+        if (p.answers) item.insertBefore(answers, count);
+        q2PerturbationsEl.appendChild(item);
+      });
+    }
+
+    q2ShowAllAnswersEl.addEventListener('change', () => {
+      q2IndividualResponsesEl.hidden = currentMode === 'global' || !q2ShowAllAnswersEl.checked || q2AnswerResponses.length === 0;
+      if (!q2IndividualResponsesEl.hidden) renderIndividualAnswers(q2AnswerResponses);
+    });
+    q3ShowAllAnswersEl.addEventListener('change', render);
+
+    function render() {
+      let values, max, unit, selectedKey = '';
+      if (currentMode === 'global') {
+        values = datasets.global.value || Object.fromEntries(zoneOrder.map(zone => [zone, 0]));
+        max = datasets.global.max; unit = datasets.global.unit;
+        subtitleEl.textContent = "Moyenne de l’intensité déclarée par toutes les personnes testées (absence de douleur comptée comme 0), par zone du corps.";
+      } else {
+        const opts = datasets[currentMode].options || {};
+        const availableKeys = Object.keys(opts);
+        if (!availableKeys.length) {
+          values = Object.fromEntries(zoneOrder.map(zone => [zone, 0]));
+          max = datasets[currentMode].max; unit = datasets[currentMode].unit;
+          subtitleEl.textContent = "Aucune donnée disponible pour ce filtre.";
+        } else {
+          selectedKey = subFilter.value && opts[subFilter.value] ? subFilter.value : availableKeys[0];
+          if (subFilter) subFilter.value = selectedKey;
+          values = opts[selectedKey]; max = datasets[currentMode].max; unit = datasets[currentMode].unit;
+          subtitleEl.textContent = currentMode === 'secteurs'
+            ? "Intensité moyenne des douleurs déclarées (chez les personnes concernées) pour le secteur : " + selectedKey
+            : "Résultats individuels pour : " + selectedKey + " (intensité déclarée sur 10)";
+        }
+      }
+
+      // Quizz 1 : Mise à jour SVG
+      zoneOrder.forEach(z => {
+        const color = colorFor(values[z] ?? 0, max);
+        zoneToIds[z].forEach(id => document.getElementById(id).setAttribute('fill', color));
+      });
+
+      // Quizz 1 : Mise à jour Tableau
+      responseDetailHeaderEl.hidden = currentMode === 'global';
+      tableBody.innerHTML = '';
+      zoneOrder.forEach(z => {
+        const color = colorFor(values[z] ?? 0, max);
+        const tr = document.createElement('tr');
+        const zoneCell = document.createElement('td');
+        const dot = document.createElement('span');
+        dot.className = 'dot';
+        dot.style.background = color;
+        zoneCell.append(dot, document.createTextNode(zoneLabels[z]));
+        const valueCell = document.createElement('td');
+        valueCell.className = 'value';
+        valueCell.textContent = `${values[z] ?? 0}${unit}`;
+        const sideCell = document.createElement('td');
+        sideCell.hidden = currentMode === 'global';
+        if (currentMode === 'personnes') {
+          const person = loadedResponses.find(item => `${item.prenom} ${item.nom}` === selectedKey);
+          const answer = person && person.nordic && person.nordic[z];
+          if (answer && answer.hasPain12m === 'oui') {
+            if (['epaules', 'coudes', 'poignets', 'genoux', 'chevilles'].includes(z)) {
+              const sideLabels = { gauche: 'Côté gauche', droit: 'Côté droit' };
+              const sides = answer.side === 'deux' ? ['gauche', 'droit'] : [answer.side];
+              const details = sides.filter(side => sideLabels[side]).map(side =>
+                `${sideLabels[side]} : ${answer.intensityBySide && answer.intensityBySide[side] !== undefined ? answer.intensityBySide[side] : '—'}/10`
+              );
+              if (details.length) {
+                sideCell.textContent = details.join(' · ');
+              } else {
+                sideCell.textContent = 'Côté non précisé';
+              }
+            } else {
+              sideCell.textContent = `Intensité : ${answer.intensity ?? '—'}/10`;
+            }
+            const followUps = [];
+            if (Array.isArray(answer.moments) && answer.moments.length) {
+              followUps.push(`Moments : ${answer.moments.join(', ')}`);
+            }
+            if (answer.workHindrance) {
+              followUps.push(`Gêne au travail : ${answer.workHindrance}`);
+            }
+            if (answer.hasPain7d) {
+              followUps.push(`Douleur dans les 7 derniers jours : ${answer.hasPain7d}`);
+            }
+            if (followUps.length) {
+              sideCell.textContent += ` · ${followUps.join(' · ')}`;
+            }
+          } else {
+            sideCell.textContent = answer && answer.hasPain12m === 'non' ? 'Aucune douleur (12 derniers mois)' : '—';
+          }
+        } else {
+          sideCell.textContent = '—';
+        }
+        tr.append(zoneCell, valueCell, sideCell);
+        tableBody.appendChild(tr);
+      });
+
+      // Quizz 2 : Rendu des facteurs de risque
+      renderQ2(selectedKey);
+      renderQ3(selectedResponses());
+    }
+
+    document.querySelectorAll('.filter-btn[data-mode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMode = btn.dataset.mode;
+
+        if (currentMode === 'global') {
+          subFilter.style.display = 'none';
+        } else {
+          subFilter.innerHTML = '';
+          Object.keys(datasets[currentMode].options).forEach(k => {
+            const opt = document.createElement('option');
+            opt.value = k; opt.textContent = k;
+            subFilter.appendChild(opt);
+          });
+          subFilter.style.display = 'inline-block';
+        }
+        render();
+      });
+    });
+
+    subFilter.addEventListener('change', render);
+
+    function selectedResponses() {
+      if (currentMode === 'secteurs') return loadedResponses.filter(item => item.service === subFilter.value);
+      if (currentMode === 'personnes') return loadedResponses.filter(item => `${item.prenom} ${item.nom}` === subFilter.value);
+      return loadedResponses;
+    }
+
+    const spreadsheetNamespace = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+    const relationshipNamespace = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+
+    function encodeXml(value) {
+      return String(value).replace(/[<>&'"]/g, character => ({
+        '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;'
+      })[character]);
+    }
+
+    function readStoredZip(input) {
+      const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+      const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      let endOffset = -1;
+      for (let offset = bytes.length - 22; offset >= Math.max(0, bytes.length - 65557); offset--) {
+        if (view.getUint32(offset, true) === 0x06054b50) {
+          endOffset = offset;
+          break;
+        }
+      }
+      if (endOffset < 0) throw new Error('Le fichier Excel généré est invalide (index ZIP absent).');
+
+      const entryCount = view.getUint16(endOffset + 10, true);
+      let directoryOffset = view.getUint32(endOffset + 16, true);
+      const decoder = new TextDecoder();
+      const entries = new Map();
+      for (let index = 0; index < entryCount; index++) {
+        if (view.getUint32(directoryOffset, true) !== 0x02014b50) {
+          throw new Error('Le fichier Excel généré contient un index ZIP invalide.');
+        }
+        const method = view.getUint16(directoryOffset + 10, true);
+        const compressedSize = view.getUint32(directoryOffset + 20, true);
+        const nameLength = view.getUint16(directoryOffset + 28, true);
+        const extraLength = view.getUint16(directoryOffset + 30, true);
+        const commentLength = view.getUint16(directoryOffset + 32, true);
+        const localOffset = view.getUint32(directoryOffset + 42, true);
+        const nameStart = directoryOffset + 46;
+        const name = decoder.decode(bytes.subarray(nameStart, nameStart + nameLength));
+        if (method !== 0) {
+          throw new Error('Impossible de finaliser le fichier Excel : compression ZIP inattendue.');
+        }
+        if (view.getUint32(localOffset, true) !== 0x04034b50) {
+          throw new Error('Le fichier Excel généré contient une entrée ZIP invalide.');
+        }
+        const localNameLength = view.getUint16(localOffset + 26, true);
+        const localExtraLength = view.getUint16(localOffset + 28, true);
+        const contentOffset = localOffset + 30 + localNameLength + localExtraLength;
+        entries.set(name, bytes.slice(contentOffset, contentOffset + compressedSize));
+        directoryOffset += 46 + nameLength + extraLength + commentLength;
+      }
+      return entries;
+    }
+
+    function createStoredZip(entries) {
+      const encoder = new TextEncoder();
+      const crcTable = new Uint32Array(256);
+      for (let index = 0; index < 256; index++) {
+        let value = index;
+        for (let bit = 0; bit < 8; bit++) value = (value & 1) ? (0xedb88320 ^ (value >>> 1)) : (value >>> 1);
+        crcTable[index] = value >>> 0;
+      }
+      const crc32 = bytes => {
+        let crc = 0xffffffff;
+        for (const byte of bytes) crc = crcTable[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+        return (crc ^ 0xffffffff) >>> 0;
+      };
+      const localParts = [];
+      const centralParts = [];
+      let localOffset = 0;
+      const write16 = (view, offset, value) => view.setUint16(offset, value, true);
+      const write32 = (view, offset, value) => view.setUint32(offset, value >>> 0, true);
+
+      entries.forEach((content, name) => {
+        const filename = encoder.encode(name);
+        const data = content instanceof Uint8Array ? content : encoder.encode(content);
+        const checksum = crc32(data);
+        const local = new Uint8Array(30 + filename.length);
+        const localView = new DataView(local.buffer);
+        write32(localView, 0, 0x04034b50);
+        write16(localView, 4, 20);
+        write16(localView, 6, 0x0800);
+        write16(localView, 8, 0);
+        write16(localView, 12, 0x21);
+        write32(localView, 14, checksum);
+        write32(localView, 18, data.length);
+        write32(localView, 22, data.length);
+        write16(localView, 26, filename.length);
+        local.set(filename, 30);
+        localParts.push(local, data);
+
+        const central = new Uint8Array(46 + filename.length);
+        const centralView = new DataView(central.buffer);
+        write32(centralView, 0, 0x02014b50);
+        write16(centralView, 4, 20);
+        write16(centralView, 6, 20);
+        write16(centralView, 8, 0x0800);
+        write16(centralView, 10, 0);
+        write16(centralView, 14, 0x21);
+        write32(centralView, 16, checksum);
+        write32(centralView, 20, data.length);
+        write32(centralView, 24, data.length);
+        write16(centralView, 28, filename.length);
+        write32(centralView, 42, localOffset);
+        central.set(filename, 46);
+        centralParts.push(central);
+        localOffset += local.length + data.length;
+      });
+
+      const centralSize = centralParts.reduce((total, part) => total + part.length, 0);
+      const end = new Uint8Array(22);
+      const endView = new DataView(end.buffer);
+      write32(endView, 0, 0x06054b50);
+      write16(endView, 8, entries.size);
+      write16(endView, 10, entries.size);
+      write32(endView, 12, centralSize);
+      write32(endView, 16, localOffset);
+      return new Blob([...localParts, ...centralParts, end], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    }
+
+    function appendXmlCollection(xml, collectionName, childXml) {
+      const collectionPattern = new RegExp(`<${collectionName}\\b([^>]*)>([\\s\\S]*?)<\\/${collectionName}>`);
+      const selfClosingPattern = new RegExp(`<${collectionName}\\b([^>]*)\\s*\\/>`);
+      let match = xml.match(collectionPattern);
+      if (match) {
+        const count = Number((match[1].match(/\bcount="(\d+)"/) || [])[1] || 0);
+        const attributes = match[1].replace(/\s+count="\d+"/, '');
+        const updated = `<${collectionName}${attributes} count="${count + 1}">${match[2]}${childXml}</${collectionName}>`;
+        return xml.replace(collectionPattern, updated);
+      }
+      match = xml.match(selfClosingPattern);
+      if (match) {
+        const attributes = match[1].replace(/\s+count="\d+"/, '');
+        return xml.replace(selfClosingPattern, `<${collectionName}${attributes} count="1">${childXml}</${collectionName}>`);
+      }
+      return xml.replace('</styleSheet>', `<${collectionName} count="1">${childXml}</${collectionName}></styleSheet>`);
+    }
+
+    function currentXmlCollectionCount(xml, collectionName) {
+      const match = xml.match(new RegExp(`<${collectionName}\\b[^>]*count="(\\d+)"`));
+      return match ? Number(match[1]) : 0;
+    }
+
+    function addCellStyle(xml, xf) {
+      const styleId = currentXmlCollectionCount(xml, 'cellXfs');
+      return {
+        xml: appendXmlCollection(xml, 'cellXfs', xf),
+        styleId
+      };
+    }
+
+    function applyWorksheetCellStyles(xml, stylesByReference) {
+      if (!stylesByReference.size) return xml;
+      return xml.replace(/<c\b([^>]*\br="([^"]+)"[^>]*)>/g, (match, attributes, reference) => {
+        const styleId = stylesByReference.get(reference);
+        if (styleId === undefined) return match;
+        const styledAttributes = /\bs="\d+"/.test(attributes)
+          ? attributes.replace(/\bs="\d+"/, `s="${styleId}"`)
+          : `${attributes} s="${styleId}"`;
+        return `<c${styledAttributes}>`;
+      });
+    }
+
+    function insertWorksheetElement(xml, element) {
+      const beforeTail = /<(?:pageMargins|drawing|legacyDrawing|tableParts|extLst)\b/;
+      const match = xml.match(beforeTail);
+      if (match && match.index !== undefined) {
+        return xml.slice(0, match.index) + element + xml.slice(match.index);
+      }
+      return xml.replace('</worksheet>', `${element}</worksheet>`);
+    }
+
+    function freezeWorksheet(xml, freeze) {
+      const pane = freeze.xSplit
+        ? `<pane xSplit="${freeze.xSplit}" ySplit="${freeze.ySplit}" topLeftCell="${freeze.topLeftCell}" activePane="bottomRight" state="frozen"/><selection pane="bottomRight" activeCell="${freeze.topLeftCell}" sqref="${freeze.topLeftCell}"/>`
+        : `<pane ySplit="${freeze.ySplit}" topLeftCell="${freeze.topLeftCell}" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="${freeze.topLeftCell}" sqref="${freeze.topLeftCell}"/>`;
+      const views = `<sheetViews><sheetView workbookViewId="0">${pane}</sheetView></sheetViews>`;
+      const existing = /<sheetViews\b[^>]*>[\s\S]*?<\/sheetViews>/;
+      if (existing.test(xml)) return xml.replace(existing, views);
+      const insertionPoint = /<(?:sheetFormatPr|cols|sheetData)\b/;
+      const match = xml.match(insertionPoint);
+      if (!match || match.index === undefined) throw new Error('Impossible de figer les volets dans une feuille Excel.');
+      return xml.slice(0, match.index) + views + xml.slice(match.index);
+    }
+
+    function addWorksheetConditionalFormatting(xml, ranges, options = {}) {
+      let priority = options.priorityStart || 1;
+      const elements = ranges.map(range => {
+        if (options.dataBar) {
+          return `<conditionalFormatting sqref="${range}"><cfRule type="dataBar" priority="${priority++}"><dataBar minLength="0" maxLength="100" showValue="1"><cfvo type="num" val="0"/><cfvo type="num" val="1"/><color rgb="FF6F9185"/></dataBar></cfRule></conditionalFormatting>`;
+        }
+        const firstCell = range.split(':')[0];
+        const rules = `<cfRule type="containsText" dxfId="0" priority="${priority++}" operator="containsText" text="Oui"><formula>NOT(ISERROR(SEARCH(&quot;Oui&quot;,${firstCell})))</formula></cfRule><cfRule type="containsText" dxfId="1" priority="${priority++}" operator="containsText" text="Non"><formula>NOT(ISERROR(SEARCH(&quot;Non&quot;,${firstCell})))</formula></cfRule>`;
+        return `<conditionalFormatting sqref="${range}">${rules}</conditionalFormatting>`;
+      }).join('');
+      return insertWorksheetElement(xml, elements);
+    }
+
+    function addNativeTable(entries, sheetXml, worksheetPath, tableNumber, ref, headers) {
+      const name = `QuestionnaireTable${tableNumber}`;
+      const uniqueHeaders = [];
+      const usedNames = new Set();
+      headers.forEach((header, index) => {
+        const baseName = String(header || `Colonne ${index + 1}`)
+          .split('').map(character => '[]:*?/\\'.includes(character) ? ' ' : character).join('').trim() || `Colonne ${index + 1}`;
+        let columnName = baseName;
+        let suffix = 2;
+        while (usedNames.has(columnName.toLocaleLowerCase('fr'))) columnName = `${baseName} ${suffix++}`;
+        usedNames.add(columnName.toLocaleLowerCase('fr'));
+        uniqueHeaders.push(`<tableColumn id="${index + 1}" name="${encodeXml(columnName)}"/>`);
+      });
+      const tableXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><table xmlns="${spreadsheetNamespace}" id="${tableNumber}" name="${name}" displayName="${name}" ref="${ref}" totalsRowShown="0"><autoFilter ref="${ref}"/><tableColumns count="${headers.length}">${uniqueHeaders.join('')}</tableColumns><tableStyleInfo name="TableStyleMedium4" showFirstColumn="0" showLastColumn="0" showRowStripes="1" showColumnStripes="0"/></table>`;
+      const sheetNumber = Number((worksheetPath.match(/sheet(\d+)\.xml$/) || [])[1]);
+      const relationshipPath = `xl/worksheets/_rels/sheet${sheetNumber}.xml.rels`;
+      let relationshipsXml = entries.has(relationshipPath)
+        ? new TextDecoder().decode(entries.get(relationshipPath))
+        : '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>';
+      const relationshipIds = [...relationshipsXml.matchAll(/\bId="rId(\d+)"/g)].map(match => Number(match[1]));
+      const relationshipId = `rId${Math.max(0, ...relationshipIds) + 1}`;
+      relationshipsXml = relationshipsXml.replace('</Relationships>', `<Relationship Id="${relationshipId}" Type="${relationshipNamespace}/table" Target="../tables/table${tableNumber}.xml"/></Relationships>`);
+      entries.set(relationshipPath, new TextEncoder().encode(relationshipsXml));
+      entries.set(`xl/tables/table${tableNumber}.xml`, new TextEncoder().encode(tableXml));
+
+      const tableParts = `<tableParts count="1"><tablePart xmlns:r="${relationshipNamespace}" r:id="${relationshipId}"/></tableParts>`;
+      let enhancedSheetXml = sheetXml.replace(/<autoFilter\b[^>]*\/>/, '');
+      const extList = enhancedSheetXml.indexOf('<extLst');
+      enhancedSheetXml = extList >= 0
+        ? `${enhancedSheetXml.slice(0, extList)}${tableParts}${enhancedSheetXml.slice(extList)}`
+        : enhancedSheetXml.replace('</worksheet>', `${tableParts}</worksheet>`);
+      return enhancedSheetXml;
+    }
+
+    function applyExcelPresentation(workbook, bytes, dimensionCount) {
+      const entries = readStoredZip(bytes);
+      const decoder = new TextDecoder();
+      const encoder = new TextEncoder();
+      let stylesXml = decoder.decode(entries.get('xl/styles.xml') || new Uint8Array());
+      if (!stylesXml) throw new Error('Le classeur Excel généré ne contient pas sa feuille de styles.');
+
+      const fontBase = currentXmlCollectionCount(stylesXml, 'fonts');
+      const fillBase = currentXmlCollectionCount(stylesXml, 'fills');
+      const borderBase = currentXmlCollectionCount(stylesXml, 'borders');
+      let fontId = fontBase;
+      let fillId = fillBase;
+      let borderId = borderBase;
+      const addFont = xml => {
+        stylesXml = appendXmlCollection(stylesXml, 'fonts', xml);
+        return fontId++;
+      };
+      const addFill = color => {
+        const id = fillId++;
+        stylesXml = appendXmlCollection(stylesXml, 'fills', `<fill><patternFill patternType="solid"><fgColor rgb="FF${color}"/><bgColor indexed="64"/></patternFill></fill>`);
+        return id;
+      };
+      const addBorder = () => {
+        const id = borderId++;
+        stylesXml = appendXmlCollection(stylesXml, 'borders', '<border><left/><right/><top/><bottom style="thin"><color rgb="FFD2DDD6"/></bottom><diagonal/></border>');
+        return id;
+      };
+      const fonts = {
+        title: addFont('<font><b/><sz val="16"/><color rgb="FFFFFFFF"/><name val="Calibri"/><family val="2"/></font>'),
+        subtitle: addFont('<font><i/><sz val="10"/><color rgb="FF53645D"/><name val="Calibri"/><family val="2"/></font>'),
+        section: addFont('<font><b/><sz val="14"/><color rgb="FFFFFFFF"/><name val="Calibri"/><family val="2"/></font>'),
+        header: addFont('<font><b/><sz val="10"/><color rgb="FFFFFFFF"/><name val="Calibri"/><family val="2"/></font>')
+      };
+      const fills = {
+        title: addFill('55756A'),
+        section: addFill('78968B'),
+        header: addFill('6F9185'),
+        subtitle: addFill('F4F6F4')
+      };
+      const border = addBorder();
+      const addXf = (styleFont, styleFill, styleBorder, alignment, numberFormat = false) => {
+        const xf = `<xf numFmtId="${numberFormat ? 10 : 0}" fontId="${styleFont}" fillId="${styleFill}" borderId="${styleBorder}" xfId="0" applyFont="1" applyFill="1" applyBorder="1"${numberFormat ? ' applyNumberFormat="1"' : ''} applyAlignment="1"><alignment ${alignment}/></xf>`;
+        const result = addCellStyle(stylesXml, xf);
+        stylesXml = result.xml;
+        return result.styleId;
+      };
+      const styles = {
+        title: addXf(fonts.title, fills.title, border, 'vertical="center" wrapText="1"'),
+        subtitle: addXf(fonts.subtitle, fills.subtitle, border, 'vertical="center" wrapText="1"'),
+        section: addXf(fonts.section, fills.section, border, 'vertical="center" wrapText="1"'),
+        header: addXf(fonts.header, fills.header, border, 'horizontal="center" vertical="center" wrapText="1"'),
+        numeric: addXf(0, 0, border, 'horizontal="right" vertical="center"'),
+        wrapped: addXf(0, 0, border, 'horizontal="left" vertical="top" wrapText="1"'),
+        percentage: addXf(0, 0, border, 'horizontal="right" vertical="center"', true)
+      };
+      stylesXml = appendXmlCollection(stylesXml, 'dxfs', '<dxf><fill><patternFill patternType="solid"><fgColor rgb="FFFFE1E1"/></patternFill></fill><font><color rgb="FF9B2C2C"/></font></dxf>');
+      stylesXml = appendXmlCollection(stylesXml, 'dxfs', '<dxf><fill><patternFill patternType="solid"><fgColor rgb="FFE1F0E5"/></patternFill></fill><font><color rgb="FF27633D"/></font></dxf>');
+      entries.set('xl/styles.xml', encoder.encode(stylesXml));
+
+      const contentTypesPath = '[Content_Types].xml';
+      let contentTypesXml = decoder.decode(entries.get(contentTypesPath));
+      const detailSheetCount = workbook.SheetNames.length - 1;
+      for (let tableNumber = 1; tableNumber <= detailSheetCount; tableNumber++) {
+        contentTypesXml = contentTypesXml.replace('</Types>', `<Override PartName="/xl/tables/table${tableNumber}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml"/></Types>`);
+      }
+
+      workbook.SheetNames.forEach((sheetName, index) => {
+        const worksheetPath = `xl/worksheets/sheet${index + 1}.xml`;
+        let worksheetXml = decoder.decode(entries.get(worksheetPath));
+        const stylesByReference = new Map();
+        const setCellStyle = (reference, styleId) => stylesByReference.set(reference, styleId);
+        const isDashboard = sheetName === 'Tableau de bord';
+        worksheetXml = freezeWorksheet(worksheetXml, isDashboard
+          ? { ySplit: 4, topLeftCell: 'A5' }
+          : { xSplit: 3, ySplit: 3, topLeftCell: 'D4' });
+
+        const range = XLSX.utils.decode_range(workbook.Sheets[sheetName]['!ref']);
+        const lastColumn = XLSX.utils.encode_col(range.e.c);
+        const lastRow = range.e.r + 1;
+        if (!isDashboard) {
+          const headers = [];
+          for (let column = 0; column <= range.e.c; column++) {
+            const cell = workbook.Sheets[sheetName][XLSX.utils.encode_cell({ r: 2, c: column })];
+            headers.push(cell ? cell.v : `Colonne ${column + 1}`);
+          }
+          worksheetXml = worksheetXml.replace(/<autoFilter\b[^>]*\/>/, '');
+          worksheetXml = addNativeTable(entries, worksheetXml, worksheetPath, index, `A3:${lastColumn}${lastRow}`, headers);
+          setCellStyle('A1', styles.title);
+          setCellStyle('A2', styles.subtitle);
+          for (let column = 0; column <= range.e.c; column++) {
+            setCellStyle(`${XLSX.utils.encode_col(column)}3`, styles.header);
+          }
+          const numericHeaders = headers.map((header, column) => ({ header: String(header), column }))
+            .filter(({ header }) => /^(ID|Version|Question|S\d+ — réponse|.*(?:intensité|score|séances par semaine|durée séance|personnes concernées|prévalence|réponses analysées|scores élevés))/i.test(header));
+          const wrappedColumns = headers.map((header, column) => ({ header: String(header), column }))
+            .filter(({ header }) => /commentaire|affirmation|moments déclarés|type de sport| — moments/i.test(header));
+          for (let row = 3; row <= range.e.r; row++) {
+            for (const { column } of numericHeaders) {
+              const reference = XLSX.utils.encode_cell({ r: row, c: column });
+              const cell = workbook.Sheets[sheetName][reference];
+              if (cell && cell.t === 'n') setCellStyle(reference, styles.numeric);
+            }
+            for (const { column } of wrappedColumns) {
+              const reference = XLSX.utils.encode_cell({ r: row, c: column });
+              if (workbook.Sheets[sheetName][reference]) {
+                setCellStyle(reference, styles.wrapped);
+              }
+            }
+          }
+          if (sheetName === 'Nordique' || sheetName === 'Base de données') {
+            const yesNoColumns = sheetName === 'Nordique'
+              ? [6, 12, 13]
+              : zoneOrder.flatMap((zone, zoneIndex) => [15 + zoneIndex * 8, 21 + zoneIndex * 8, 22 + zoneIndex * 8]);
+            const ranges = yesNoColumns.map(column => `${XLSX.utils.encode_col(column)}4:${XLSX.utils.encode_col(column)}${lastRow}`);
+            worksheetXml = addWorksheetConditionalFormatting(worksheetXml, ranges);
+          }
+        } else {
+          [
+            ['A1', styles.title],
+            ['A2', styles.subtitle],
+            ['A4', styles.section],
+            ['A11', styles.section],
+            ['A23', styles.section],
+            [`A${26 + dimensionCount}`, styles.section]
+          ].forEach(([reference, style]) => {
+            setCellStyle(reference, style);
+          });
+          for (let column = 0; column < 4; column++) {
+            setCellStyle(`${XLSX.utils.encode_col(column)}5`, styles.header);
+            setCellStyle(`${XLSX.utils.encode_col(column)}12`, styles.header);
+          }
+          for (let column = 0; column < 6; column++) {
+            setCellStyle(`${XLSX.utils.encode_col(column)}24`, styles.header);
+            setCellStyle(`${XLSX.utils.encode_col(column)}${27 + dimensionCount}`, styles.header);
+          }
+          for (let row = 5; row <= 8; row++) setCellStyle(`B${row + 1}`, styles.numeric);
+          for (let row = 12; row < 21; row++) {
+            setCellStyle(`B${row + 1}`, styles.numeric);
+            setCellStyle(`C${row + 1}`, styles.percentage);
+            setCellStyle(`D${row + 1}`, styles.numeric);
+          }
+          for (let row = 24; row < 24 + dimensionCount; row++) {
+            setCellStyle(`B${row + 1}`, styles.numeric);
+            setCellStyle(`C${row + 1}`, styles.percentage);
+            setCellStyle(`E${row + 1}`, styles.numeric);
+            setCellStyle(`F${row + 1}`, styles.numeric);
+          }
+          for (let index = 0; index < 20; index++) {
+            const row = 28 + dimensionCount + index;
+            setCellStyle(`D${row}`, styles.numeric);
+            setCellStyle(`E${row}`, styles.numeric);
+            const rateCell = workbook.Sheets[sheetName][`F${row}`];
+            if (rateCell && rateCell.t === 'n') setCellStyle(`F${row}`, styles.percentage);
+          }
+          worksheetXml = addWorksheetConditionalFormatting(worksheetXml, ['C13:C21'], { dataBar: true });
+          worksheetXml = addWorksheetConditionalFormatting(worksheetXml, [`C25:C${24 + dimensionCount}`], { dataBar: true, priorityStart: 2 });
+        }
+        worksheetXml = applyWorksheetCellStyles(worksheetXml, stylesByReference);
+        entries.set(worksheetPath, encoder.encode(worksheetXml));
+      });
+      entries.set(contentTypesPath, encoder.encode(contentTypesXml));
+      return createStoredZip(entries);
+    }
+
+    async function exportResponses() {
+      if (!window.XLSX) {
+        throw new Error('La bibliothèque d’export Excel n’est pas disponible.');
+      }
+      const responses = selectedResponses();
+      if (!responses.length) return;
+      const workbook = XLSX.utils.book_new();
+      const sideLabels = { gauche: 'Gauche', droit: 'Droit', deux: 'Les deux côtés' };
+      const yesNoLabels = { oui: 'Oui', non: 'Non' };
+      const answerLabels = {
+        1: '1 — Pas du tout d’accord',
+        2: '2 — Plutôt pas d’accord',
+        3: '3 — Plutôt d’accord',
+        4: '4 — Tout à fait d’accord'
+      };
+      const addTableSheet = (name, title, description, headers, rows, widths) => {
+        const data = [[title], [description], headers, ...rows];
+        const sheet = XLSX.utils.aoa_to_sheet(data);
+        sheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } }];
+        sheet['!cols'] = widths.map(wch => ({ wch }));
+        sheet['!autofilter'] = { ref: `A3:${XLSX.utils.encode_col(headers.length - 1)}${Math.max(3, data.length)}` };
+        sheet['!views'] = [{ state: 'frozen', ySplit: 3 }];
+        XLSX.utils.book_append_sheet(workbook, sheet, name);
+        return sheet;
+      };
+      const zoneSummary = zoneOrder.map(zone => {
+        const affected = responses
+          .map(person => person.nordic && person.nordic[zone])
+          .filter(answer => answer && answer.hasPain12m === 'oui');
+        const percent = Math.round(affected.length / responses.length * 100);
+        const intensities = (currentMode === 'global'
+          ? responses
+            .map(person => person.nordic && person.nordic[zone])
+            .filter(answer => answer && (answer.hasPain12m === 'oui' || answer.hasPain12m === 'non'))
+            .map(answer => answer.hasPain12m === 'non' ? 0 : intensityForAnswer(answer))
+          : affected.map(intensityForAnswer)
+        ).filter(value => value !== null);
+        return {
+          zone,
+          label: zoneLabels[zone],
+          count: affected.length,
+          percent,
+          intensity: intensities.length ? Number((intensities.reduce((sum, value) => sum + value, 0) / intensities.length).toFixed(1)) : null
+        };
+      });
+      const versions = responses.length
+        ? [...new Set(responses.map(person => Number(person.psychosocial_scale_version) || 1))]
+        : [5];
+      const dimensionSummary = versions.flatMap(version => {
+        const versionResponses = responses.filter(person => (Number(person.psychosocial_scale_version) || 1) === version);
+        return q2DimensionsForVersion(version).map(dimension => {
+          const scores = versionResponses.flatMap(person => dimension.ids.map(id =>
+            riskScoreForAnswer(id, person.psychosocial && person.psychosocial[id], version)
+          ).filter(score => score !== null));
+          const personMeans = versionResponses.map(person => {
+            const personScores = dimension.ids.map(id =>
+              riskScoreForAnswer(id, person.psychosocial && person.psychosocial[id], version)
+            ).filter(score => score !== null);
+            return personScores.length
+              ? personScores.reduce((sum, score) => sum + score, 0) / personScores.length
+              : null;
+          }).filter(mean => mean !== null);
+          const mean = personMeans.length
+            ? personMeans.reduce((sum, personMean) => sum + personMean, 0) / personMeans.length
+            : null;
+          return {
+            label: `${version === 3 ? '' : `${q2VersionLabel(version)} — `}${dimension.label}`,
+            mean: mean === null ? null : Number(mean.toFixed(2)),
+            percent: mean === null ? null : Math.round(mean / 4 * 100),
+            category: q2RiskCategory(mean === null ? null : Math.round(mean / 4 * 100)),
+            count: scores.length,
+            highCount: scores.filter(score => score >= 3).length
+          };
+        });
+      });
+      const appliedFilter = currentMode === 'global'
+        ? 'Toutes les réponses'
+        : `${currentMode === 'secteurs' ? 'Secteur' : 'Personne'} : ${subFilter.value}`;
+      const completedComments = responses.filter(person =>
+        (person.nordic_comment && person.nordic_comment.trim()) ||
+        (person.psychosocial_comment && person.psychosocial_comment.trim())
+      ).length;
+      const activityKnowledgeSummaryRows = q3Questions.map((question, questionIndex) => {
+        const answerCounts = [0, 0, 0, 0];
+        let answeredCount = 0;
+        responses.forEach(person => {
+          const value = Number(person.activityKnowledge && person.activityKnowledge[`Q${questionIndex + 1}`]);
+          if (Number.isInteger(value) && value >= 0 && value <= 3) {
+            answerCounts[value] += 1;
+            answeredCount += 1;
+          }
+        });
+        const correctCount = answerCounts[question.correct];
+        return [
+          `Q${questionIndex + 1}`,
+          question.text,
+          `${String.fromCharCode(65 + question.correct)}. ${question.options[question.correct]}`,
+          answeredCount,
+          correctCount,
+          answeredCount ? correctCount / answeredCount : 'N/D',
+          ...answerCounts
+        ];
+      });
+
+      const dashboardRows = [
+        ['TABLEAU DE BORD — QUESTIONNAIRES'],
+        [`Export du ${new Date().toLocaleDateString('fr-FR')} · ${appliedFilter}`],
+        [],
+        ['INDICATEURS CLÉS'],
+        ['Indicateur', 'Valeur'],
+        ['Répondants inclus', responses.length],
+        ['Répondants avec au moins un commentaire', completedComments],
+        ['Zones Nordiques analysées', zoneOrder.length],
+        ['Dimensions psychosociales analysées', dimensionSummary.length],
+        [],
+        ['QUESTIONNAIRE NORDIQUE — PRÉVALENCE DES DOULEURS'],
+        ['Zone corporelle', 'Personnes concernées', 'Prévalence', currentMode === 'global' ? 'Intensité moyenne /10 (tous répondants, sans douleur = 0)' : 'Intensité moyenne /10 (personnes concernées)'],
+        ...zoneSummary.map(item => [
+          item.label, item.count, item.percent / 100, item.intensity ?? 'N/D'
+        ]),
+        [],
+        ['QUESTIONNAIRE PSYCHOSOCIAL — SCORES INDICATIFS'],
+        ['Catégorie psychosociale', 'Moyenne /4', 'Score indicatif', 'Niveau indicatif', 'Réponses analysées', 'Scores élevés (3–4)'],
+        ...dimensionSummary.map(item => [
+          item.label,
+          item.mean ?? '—',
+          item.percent === null ? 'N/D' : item.percent / 100,
+          item.category,
+          item.count,
+          item.highCount
+        ]),
+        [],
+        ['QUESTIONNAIRE RAPIDE D’ÉDUCATION À LA SANTÉ — ACTIVITÉ PHYSIQUE ET SÉDENTARITÉ'],
+        ['Question', 'Énoncé', 'Bonne réponse', 'Réponses analysées', 'Taux de réussite', 'Répartition A / B / C / D'],
+        ...activityKnowledgeSummaryRows.map(row => [row[0], row[1], row[2], row[3], row[5], row.slice(6).join(' / ')]),
+        [],
+        ['Catégories psychosociales : favorable < 34 %, modéré de 34 à 66 %, élevé à partir de 67 %. Scores indicatifs, sans valeur de diagnostic.'],
+        ['Les barres de données visualisent les scores indicatifs (échelle 0–100 %).'],
+        ['Le détail nominatif est disponible dans les onglets Nordique, Psychosocial, Activité physique, Réponses activité, Commentaires et Base de données.']
+      ];
+      const dashboard = XLSX.utils.aoa_to_sheet(dashboardRows);
+      dashboard['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } },
+        { s: { r: 3, c: 0 }, e: { r: 3, c: 1 } },
+        { s: { r: 10, c: 0 }, e: { r: 10, c: 3 } },
+        { s: { r: 22, c: 0 }, e: { r: 22, c: 5 } },
+        { s: { r: 25 + dimensionSummary.length, c: 0 }, e: { r: 25 + dimensionSummary.length, c: 5 } },
+        ...[48, 49, 50].map(row => ({
+          s: { r: row + dimensionSummary.length, c: 0 },
+          e: { r: row + dimensionSummary.length, c: 5 }
+        }))
+      ];
+      dashboard['!cols'] = [{ wch: 38 }, { wch: 22 }, { wch: 22 }, { wch: 20 }, { wch: 25 }, { wch: 24 }];
+      dashboard['!views'] = [{ state: 'frozen', ySplit: 4 }];
+      zoneSummary.forEach((item, index) => {
+        const cell = dashboard[`C${13 + index}`];
+        if (cell) cell.z = '0%';
+      });
+      dimensionSummary.forEach((item, index) => {
+        const cell = dashboard[`C${25 + index}`];
+        if (cell && item.percent !== null) cell.z = '0%';
+      });
+      activityKnowledgeSummaryRows.forEach((row, index) => {
+        const cell = dashboard[`E${28 + dimensionSummary.length + index}`];
+        if (cell && typeof row[5] === 'number') cell.z = '0%';
+      });
+      XLSX.utils.book_append_sheet(workbook, dashboard, 'Tableau de bord');
+
+      const nordicRows = [];
+      responses.forEach(person => zoneOrder.forEach(zone => {
+        const answer = person.nordic && person.nordic[zone] || {};
+        const intensities = answer.intensityBySide || {};
+        nordicRows.push([
+          person.id, person.prenom, person.nom, person.service, person.created_at || '',
+          zoneLabels[zone], yesNoLabels[answer.hasPain12m] || 'Non renseigné',
+          sideLabels[answer.side] || (['epaules', 'coudes', 'poignets', 'genoux', 'chevilles'].includes(zone) && answer.hasPain12m === 'oui' ? 'Non renseigné' : 'Sans objet'),
+          intensities.gauche ?? '', intensities.droit ?? '', answer.intensity ?? '',
+          Array.isArray(answer.moments) ? answer.moments.join(', ') : '',
+          yesNoLabels[answer.workHindrance] || (answer.hasPain12m === 'oui' ? 'Non renseigné' : 'Sans objet'),
+          yesNoLabels[answer.hasPain7d] || (answer.hasPain12m === 'oui' ? 'Non renseigné' : 'Sans objet')
+        ]);
+      }));
+      addTableSheet(
+        'Nordique',
+        'QUESTIONNAIRE NORDIQUE — RÉPONSES DÉTAILLÉES',
+        'Une ligne par personne et par zone corporelle. Les intensités par côté ne sont renseignées que pour les zones bilatérales.',
+        ['ID', 'Prénom', 'Nom', 'Service', 'Date', 'Zone', 'Douleur (12 mois)', 'Côté concerné', 'Intensité gauche /10', 'Intensité droite /10', 'Intensité générale /10', 'Moments déclarés', 'Gêne au travail', 'Douleur (7 jours)'],
+        nordicRows,
+        [10, 18, 20, 22, 21, 24, 19, 20, 20, 20, 22, 35, 20, 20]
+      );
+
+      const psychosocialRows = [];
+      responses.forEach(person => {
+        const scaleVersion = Number(person.psychosocial_scale_version) || 1;
+        const questions = q2QuestionsForVersion(scaleVersion);
+        for (let index = 1; index <= questions.length; index++) {
+          const questionId = `S${index}`;
+          const answer = person.psychosocial && person.psychosocial[questionId];
+          const score = numericAnswer(answer && typeof answer === 'object' ? answer.perturb : answer);
+          const riskScore = riskScoreForAnswer(questionId, answer, scaleVersion);
+          const dimension = q2DimensionsForVersion(scaleVersion).find(group => group.ids.includes(questionId));
+          psychosocialRows.push([
+            person.id, person.prenom, person.nom, person.service, person.created_at || '',
+            scaleVersion, questionId,
+            questions[index - 1] || questionId,
+            score === null ? 'Non renseigné' : q2AnswerLabel(questionId, score, scaleVersion),
+            riskScore ?? '', dimension ? dimension.label : ''
+          ]);
+        }
+      });
+      addTableSheet(
+        'Psychosocial',
+        'QUESTIONNAIRE PSYCHOSOCIAL — RÉPONSES DÉTAILLÉES',
+        'Une ligne par question et par personne. Le score indicatif tient compte du recodage des questions positives.',
+        ['ID', 'Prénom', 'Nom', 'Service', 'Date', 'Version échelle', 'Question', 'Affirmation', 'Réponse', 'Score indicatif /4', 'Catégorie psychosociale'],
+        psychosocialRows,
+        [10, 18, 20, 22, 21, 16, 12, 72, 34, 22, 34]
+      );
+
+      addTableSheet(
+        'Activité physique',
+        'QUESTIONNAIRE RAPIDE D’ÉDUCATION À LA SANTÉ — SYNTHÈSE',
+        'Synthèse des réponses selon le filtre sélectionné. Les pourcentages de réussite excluent les réponses manquantes.',
+        ['Question', 'Énoncé', 'Bonne réponse', 'Réponses analysées', 'Bonnes réponses', 'Taux de réussite', 'Choix A', 'Choix B', 'Choix C', 'Choix D'],
+        activityKnowledgeSummaryRows,
+        [12, 76, 80, 20, 18, 18, 12, 12, 12, 12]
+      );
+      const activityKnowledgeRows = [];
+      responses.forEach(person => q3Questions.forEach((question, questionIndex) => {
+        const answer = Number(person.activityKnowledge && person.activityKnowledge[`Q${questionIndex + 1}`]);
+        const validAnswer = Number.isInteger(answer) && answer >= 0 && answer <= 3;
+        activityKnowledgeRows.push([
+          person.id, person.prenom, person.nom, person.service, person.created_at || '',
+          `Q${questionIndex + 1}`, question.text,
+          validAnswer ? q3AnswerLabel(questionIndex, answer) : 'Non renseigné',
+          `${String.fromCharCode(65 + question.correct)}. ${question.options[question.correct]}`,
+          validAnswer ? (answer === question.correct ? 'Correcte' : 'Incorrecte') : 'Non renseigné'
+        ]);
+      }));
+      addTableSheet(
+        'Réponses activité',
+        'QUESTIONNAIRE RAPIDE D’ÉDUCATION À LA SANTÉ — RÉPONSES DÉTAILLÉES',
+        'Une ligne par question et par personne, selon le filtre sélectionné.',
+        ['ID', 'Prénom', 'Nom', 'Service', 'Date', 'Question', 'Énoncé', 'Réponse donnée', 'Bonne réponse', 'Résultat'],
+        activityKnowledgeRows,
+        [10, 18, 20, 22, 21, 12, 76, 78, 80, 18]
+      );
+
+      const commentRows = responses
+        .filter(person =>
+          (typeof person.nordic_comment === 'string' && person.nordic_comment.trim()) ||
+          (typeof person.psychosocial_comment === 'string' && person.psychosocial_comment.trim())
+        )
+        .map(person => [
+          person.id, person.prenom, person.nom, person.service, person.created_at || '',
+          person.nordic_comment || '', person.psychosocial_comment || ''
+        ]);
+      addTableSheet(
+        'Commentaires',
+        'COMMENTAIRES ET PRÉCISIONS',
+        commentRows.length ? 'Commentaires facultatifs enregistrés pour les réponses incluses selon le filtre sélectionné.' : 'Aucun commentaire enregistré pour les réponses incluses selon le filtre sélectionné.',
+        ['ID', 'Prénom', 'Nom', 'Service', 'Date', 'Commentaire — questionnaire Nordique', 'Commentaire — questionnaire psychosocial'],
+        commentRows,
+        [10, 18, 20, 22, 21, 55, 55]
+      );
+
+      const rawHeaders = [
+        'ID', 'Nom', 'Prénom', 'Service', 'Fonction', 'Date d’enregistrement',
+        'Consentement enregistré le', 'Ancienneté', 'Latéralité',
+        'Pratique sportive hors CHU', 'Type de sport hors CHU', 'Séances par semaine hors CHU', 'Durée séance hors CHU (minutes)', 'Version échelle Q2',
+        'Commentaire questionnaire Nordique', 'Commentaire questionnaire psychosocial'
+      ];
+      zoneOrder.forEach(zone => rawHeaders.push(
+        `${zoneLabels[zone]} — douleur 12 mois`,
+        `${zoneLabels[zone]} — côté`,
+        `${zoneLabels[zone]} — intensité /10`,
+        `${zoneLabels[zone]} — intensité gauche /10`,
+        `${zoneLabels[zone]} — intensité droite /10`,
+        `${zoneLabels[zone]} — moments`,
+        `${zoneLabels[zone]} — gêne au travail`,
+        `${zoneLabels[zone]} — douleur 7 jours`
+      ));
+      const databaseResponses = loadedResponses;
+      const maximumQuestionCount = databaseResponses.reduce((maximum, person) => {
+        const version = Number(person.psychosocial_scale_version) || 1;
+        return Math.max(maximum, version >= 6 ? 10 : (version >= 5 ? 14 : (version >= 4 ? 29 : (version >= 3 ? 30 : 46))));
+      }, 0);
+      for (let index = 1; index <= maximumQuestionCount; index++) rawHeaders.push(`S${index} — réponse`);
+      q3Questions.forEach((_, index) => rawHeaders.push(`Q${index + 1} — réponse activité physique`));
+      const rawRows = databaseResponses.map(person => {
+        const row = [
+          person.id, person.nom, person.prenom, person.service, person.fonction || '',
+          person.created_at || '', person.consent_at || '',
+          person.anciennete, person.lateralite,
+          person.activity && person.activity.sportPracticed === 'oui' ? 'Oui' :
+            person.activity && person.activity.sportPracticed === 'non' ? 'Non' : 'Non renseigné',
+          person.activity && person.activity.sportPracticed === 'oui'
+            ? sportNames(person.activity.sportType).join('; ')
+            : '',
+          (person.activity && person.activity.sessionsPerWeek) ?? '',
+          (person.activity && person.activity.minutesPerSession) ?? '',
+          Number(person.psychosocial_scale_version) || 1,
+          person.nordic_comment || '', person.psychosocial_comment || ''
+        ];
+        zoneOrder.forEach(zone => {
+          const answer = person.nordic && person.nordic[zone] || {};
+          const intensityBySide = answer.intensityBySide || {};
+          row.push(
+            yesNoLabels[answer.hasPain12m] || '',
+            sideLabels[answer.side] || '',
+            answer.intensity ?? '',
+            intensityBySide.gauche ?? '',
+            intensityBySide.droit ?? '',
+            Array.isArray(answer.moments) ? answer.moments.join(', ') : '',
+            yesNoLabels[answer.workHindrance] || '',
+            yesNoLabels[answer.hasPain7d] || ''
+          );
+        });
+        for (let index = 1; index <= maximumQuestionCount; index++) {
+          const answer = person.psychosocial && person.psychosocial[`S${index}`];
+          row.push(numericAnswer(answer && typeof answer === 'object' ? answer.perturb : answer) ?? '');
+        }
+        q3Questions.forEach((_, index) => {
+          const answer = Number(person.activityKnowledge && person.activityKnowledge[`Q${index + 1}`]);
+          row.push(Number.isInteger(answer) && answer >= 0 && answer <= 3 ? answer : '');
+        });
+        return row;
+      });
+      addTableSheet(
+        'Base de données',
+        'BASE DE DONNÉES — EXPORT COMPLET',
+        'Une ligne par répondant. Cet onglet contient toutes les réponses enregistrées, indépendamment du filtre sélectionné pour les autres onglets.',
+        rawHeaders,
+        rawRows,
+        rawHeaders.map((header, index) => index < 9
+          ? Math.max(15, Math.min(26, header.length + 2))
+          : ([9, 13, 14].includes(index) ? 38 : 22))
+      );
+
+      const databaseSheetIndex = workbook.SheetNames.indexOf('Base de données');
+      if (databaseSheetIndex > 1) {
+        const [databaseSheetName] = workbook.SheetNames.splice(databaseSheetIndex, 1);
+        workbook.SheetNames.splice(1, 0, databaseSheetName);
+      }
+
+      workbook.Props = {
+        Title: 'Synthèse des questionnaires Nordique et psychosocial',
+        Subject: `Export des réponses — ${appliedFilter}`,
+        Author: 'Service APA',
+        CreatedDate: new Date()
+      };
+      const filterSuffix = currentMode === 'global'
+        ? 'global'
+        : (subFilter.value || currentMode)
+          .replace(/[^A-Za-z0-9_-]+/g, '-').slice(0, 30);
+      const workbookBytes = XLSX.write(workbook, { bookType: 'xlsx', type: 'array', compression: false });
+      const excelFile = new Blob([workbookBytes], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+      const downloadUrl = URL.createObjectURL(excelFile);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = downloadUrl;
+      downloadLink.download = `questionnaires-synthese-${filterSuffix}.xlsx`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+    }
+
+    const exportErrorEl = document.getElementById('export-error');
+    document.getElementById('btn-export').addEventListener('click', async () => {
+      const button = document.getElementById('btn-export');
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+      button.textContent = 'Préparation du fichier…';
+      exportErrorEl.hidden = true;
+      try {
+        await exportResponses();
+      } catch (error) {
+        console.error('Création du fichier Excel impossible :', error);
+        exportErrorEl.textContent = `Impossible de créer le fichier Excel : ${error.message}`;
+        exportErrorEl.hidden = false;
+      } finally {
+        button.textContent = 'Exporter Excel';
+        button.removeAttribute('aria-busy');
+        button.disabled = loadedResponses.length === 0;
+      }
+    });
+
+    async function loadResponses() {
+      const response = await fetch('api.php', { credentials: 'same-origin' });
+      let payload;
+      try {
+        payload = await response.json();
+      } catch (error) {
+        throw new Error(`L’API a renvoyé une réponse invalide (HTTP ${response.status}). Vérifiez sa configuration et la base de données.`);
+      }
+      if (!response.ok) {
+        if (response.status === 401) {
+          window.location.replace('index.html?session=expiree&retour=resultat.html');
+          return;
+        }
+        throw new Error(payload.error || `Erreur API (${response.status})`);
+      }
+      if (!Array.isArray(payload.responses)) {
+        throw new Error('La réponse de l’API ne contient pas la liste des résultats attendue.');
+      }
+      const responses = payload.responses || [];
+      loadedResponses = responses;
+      document.getElementById('btn-export').disabled = responses.length === 0;
+      if (responses.length === 0) {
+        datasets.global.value = Object.fromEntries(zoneOrder.map(zone => [zone, 0]));
+        datasetsQ2.global = { metrics: [], perturbations: [] };
+        render();
+        return;
+      }
+
+      const responsesByService = {};
+      responses.forEach(item => {
+        const service = item.service;
+        if (!responsesByService[service]) responsesByService[service] = [];
+        responsesByService[service].push(item);
+      });
+
+      datasets.global.value = Object.fromEntries(zoneOrder.map(zone => [zone, meanPainIntensity(responses, zone, true)]));
+      datasets.secteurs.options = {};
+      Object.keys(responsesByService).forEach(service => {
+        datasets.secteurs.options[service] = {};
+        zoneOrder.forEach(zone => {
+          datasets.secteurs.options[service][zone] = meanPainIntensity(responsesByService[service], zone);
+        });
+      });
+
+      datasets.personnes.options = {};
+      responses.forEach(item => {
+        const key = `${item.prenom} ${item.nom}`;
+        datasets.personnes.options[key] = {};
+        zoneOrder.forEach(zone => {
+          const answer = item.nordic && item.nordic[zone];
+          datasets.personnes.options[key][zone] = Number(answer && answer.hasPain12m === 'oui' ? answer.intensity : 0);
+        });
+      });
+
+      datasetsQ2.global = q2Data(responses);
+      datasetsQ2.secteurs = {};
+      Object.keys(responsesByService).forEach(service => {
+        datasetsQ2.secteurs[service] = q2Data(responsesByService[service]);
+      });
+      datasetsQ2.personnes = {};
+      responses.forEach(item => {
+        datasetsQ2.personnes[`${item.prenom} ${item.nom}`] = q2Data([item]);
+      });
+      render();
+    }
+
+    loadResponses().catch(error => {
+      console.error('Chargement des résultats impossible :', error);
+      const message = document.createElement('div');
+      message.className = 'disclaimer';
+      message.style.color = 'var(--risk-high)';
+      message.textContent = `Impossible de charger les résultats : ${error.message}`;
+      document.querySelector('.container').prepend(message);
+    });
+  </script>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div>
+        <p>© 2026 — APA. Tous droits réservés.</p>
+        <div class="rgpd-note">Ce site traite les réponses au questionnaire dans le cadre de la prévention des risques professionnels et de la santé au travail, conformément au RGPD et à la réglementation en vigueur.</div>
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="politique-confidentialite.html">Politique de confidentialité</a>
+        <a href="mailto:remyquelin@icloud.com">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

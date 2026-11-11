@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Second questionnaire</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f4; --card-bg: #e5ece7; --card-border: #d2ddd6;
+      --text-main: #1c2d27; --text-muted: #53645d; --input-bg: #ffffff;
+      --input-border: #d0d7d3; --btn-bg: #8ba9a0; --btn-hover: #79978e; --btn-text: #ffffff;
+      --badge-bg: #d5e3dc; --badge-text: #33544a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .page-shell {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .container { max-width: 560px; width: 100%; text-align: center; }
+    .check { font-size: 2.4rem; margin-bottom: 16px; }
+    .card { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 40px; }
+    .badge { display: inline-block; background-color: var(--badge-bg); color: var(--badge-text); font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; margin-bottom: 16px; }
+    h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.7rem; font-weight: 600; margin-bottom: 14px; }
+    p { font-size: 1.02rem; color: var(--text-muted); margin-bottom: 24px; }
+    .btn-next { background-color: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 6px; padding: 16px 24px; font-family: inherit; font-size: 1.05rem; font-weight: 500; cursor: pointer; width: 100%; text-decoration: none; display: block; }
+    .btn-next:hover { background-color: var(--btn-hover); }
+    .footer-note { font-size: 0.85rem; color: var(--text-muted); margin-top: 14px; }
+    .site-footer {
+      background-color: #dfe8e3;
+      border-top: 1px solid #d2ddd6;
+      width: 100%;
+    }
+    .site-footer-inner {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .site-footer p {
+      font-size: 0.86rem;
+      color: #53645d;
+      margin: 0;
+    }
+    .site-footer .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+    .site-footer a {
+      color: #23302d;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .site-footer a:hover { text-decoration: underline; }
+    .rgpd-note {
+      font-size: 0.78rem;
+      color: #53645d;
+      line-height: 1.5;
+      max-width: 620px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <div class="container">
+      <div class="card">
+        <div class="check">✓</div>
+        <span class="badge">Étape 2 sur 3</span>
+        <h1>Premier questionnaire terminé</h1>
+        <p>Vous allez maintenant répondre à un second questionnaire, également validé scientifiquement. Celui-ci porte sur le stress et les éventuelles situations de mal-être en lien avec l'activité professionnelle. Il vient compléter l'évaluation en prenant en compte les facteurs psychosociaux susceptibles d'influencer la santé au travail.</p>
+        <a href="quizz2.html?v=20261110" class="btn-next">Continuer vers le questionnaire 2</a>
+        <div class="footer-note">Comptez environ dix minutes supplémentaires.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div>
+        <p>© 2026 — Service APA. Tous droits réservés.</p>
+        <div class="rgpd-note">Ce site traite les réponses au questionnaire dans le cadre de la prévention des risques professionnels et de la santé au travail, conformément au RGPD et à la réglementation en vigueur.</div>
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="politique-confidentialite.html">Politique de confidentialité</a>
+        <a href="mailto:remyquelin@icloud.com">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

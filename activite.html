@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Activité physique — Questionnaire</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f4; --card-bg: #e5ece7; --card-border: #d2ddd6;
+      --text-main: #1c2d27; --text-muted: #53645d; --input-bg: #ffffff;
+      --input-border: #d0d7d3; --btn-bg: #8ba9a0; --btn-hover: #79978e; --btn-text: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body { min-height: 100vh; display: flex; flex-direction: column; font-family: 'DM Sans', sans-serif; background: var(--bg-color); color: var(--text-main); line-height: 1.5; }
+    .top-header { background: var(--card-bg); border-bottom: 1px solid var(--card-border); padding: 18px 20px; }
+    .top-header-inner { max-width: 1220px; margin: 0 auto; }
+    .top-header h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.8rem; }
+    .container { flex: 1; max-width: 680px; width: 100%; min-width: 0; margin: 0 auto; padding: 40px 20px 48px; }
+    .card { min-width: 0; background: #fff; border: 1px solid var(--card-border); border-radius: 18px; padding: 40px; box-shadow: 0 12px 36px #1c2d2710; }
+    .step-label { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; color: #33544a; font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .step-dot { width: 9px; height: 9px; background: #6d9587; border-radius: 50%; }
+    .card h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.7rem; margin-bottom: 10px; }
+    .card-subtitle { color: var(--text-muted); margin-bottom: 24px; }
+    .question-block { width: 100%; min-width: 0; padding: 20px; background: #f4f7f5; border: 1px solid #dfe8e3; border-radius: 12px; }
+    .question-title { display: block; width: 100%; max-width: 100%; margin: 0 0 14px; padding: 0; font-size: 1rem; font-weight: 700; line-height: 1.45; white-space: normal; overflow-wrap: anywhere; }
+    .choice-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .choice-card { position: relative; min-width: 0; margin: 0; display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #fff; border: 1px solid var(--input-border); border-radius: 10px; cursor: pointer; transition: border-color .15s, background .15s, box-shadow .15s; }
+    .choice-card:has(input:checked) { background: #eaf2ee; border-color: #6d9587; box-shadow: 0 0 0 2px #6d958722; }
+    .choice-card input { width: 18px; height: 18px; margin: 0; accent-color: #547b6e; }
+    .choice-card > span { min-width: 0; }
+    .choice-title { font-weight: 700; }
+    .choice-hint { display: block; color: var(--text-muted); font-size: .82rem; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
+    .form-group { min-width: 0; display: flex; flex-direction: column; }
+    .full-width { grid-column: span 2; }
+    label { font-size: .95rem; font-weight: 700; margin-bottom: 7px; }
+    .field-hint { margin-top: 6px; color: var(--text-muted); font-size: .84rem; }
+    input, select {
+      width: 100%; padding: 14px 16px; font: inherit; font-size: 1rem;
+      border: 1px solid var(--input-border); border-radius: 6px; background: var(--input-bg); color: var(--text-main);
+    }
+    textarea { width: 100%; min-height: 98px; resize: vertical; padding: 13px 15px; font: inherit; border: 1px solid var(--input-border); border-radius: 8px; background: var(--input-bg); color: var(--text-main); }
+    input:focus, select:focus, textarea:focus, .choice-card:focus-within { outline: 2px solid var(--btn-hover); outline-offset: 1px; }
+    .details-panel { min-width: 0; margin-top: 18px; padding: 20px; background: #f8faf9; border: 1px solid var(--card-border); border-radius: 12px; }
+    .details-panel[hidden] { display: none; }
+    .details-title { margin-bottom: 4px; font-size: 1.08rem; font-weight: 700; }
+    .details-intro { margin-bottom: 16px; color: var(--text-muted); font-size: .9rem; }
+    .form-error { color: #a12e2a; font-size: .9rem; margin-top: 16px; }
+    .actions { display: flex; gap: 12px; margin-top: 28px; }
+    .button {
+      display: block; flex: 1; padding: 15px 20px; border: 0; border-radius: 6px;
+      font: inherit; font-size: 1rem; font-weight: 700; text-align: center; text-decoration: none; cursor: pointer;
+    }
+    .button-primary { background: var(--btn-bg); color: var(--btn-text); }
+    .button-primary:hover { background: var(--btn-hover); }
+    .button-secondary { background: #fff; color: var(--text-main); border: 1px solid var(--input-border); }
+    .button:disabled { opacity: .65; cursor: wait; }
+    .site-footer { width: 100%; background: #dfe8e3; border-top: 1px solid var(--card-border); }
+    .site-footer-inner { max-width: 1220px; margin: 0 auto; padding: 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .site-footer p { font-size: .86rem; color: var(--text-muted); }
+    .rgpd-note { max-width: 620px; font-size: .78rem; color: var(--text-muted); line-height: 1.5; }
+    .site-footer .footer-links { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+    .site-footer a { color: var(--text-main); text-decoration: none; font-size: .85rem; font-weight: 600; }
+    .site-footer a:hover { text-decoration: underline; }
+    @media (max-width: 560px) {
+      .container { padding: 24px 14px 36px; }
+      .card { padding: 26px 18px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .full-width { grid-column: span 1; }
+      .question-block, .details-panel { padding: 16px; }
+      .question-title { float: none; }
+      .choice-list { grid-template-columns: 1fr; }
+      .choice-list { gap: 8px; }
+      .choice-card { padding: 12px; }
+      .top-header h1 { font-size: 1.3rem; }
+      .actions { flex-direction: column-reverse; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-header">
+    <div class="top-header-inner"><h1>Comprendre vos douleurs au travail, pour mieux les prévenir</h1></div>
+  </header>
+
+  <main class="container">
+    <section class="card" aria-labelledby="activity-title">
+      <div class="step-label"><span class="step-dot" aria-hidden="true"></span> Avant le questionnaire Nordique</div>
+      <h2 id="activity-title">Votre activité physique</h2>
+      <p class="card-subtitle">Cette courte question nous aide à mieux comprendre votre profil. Elle concerne les activités sportives que vous pratiquez actuellement en dehors du CHU, et non les activités pratiquées dans le cadre de votre travail au CHU.</p>
+      <form id="activity-form">
+        <div class="question-block" role="group" aria-labelledby="sport-practiced-question">
+          <p class="question-title" id="sport-practiced-question">En dehors du CHU, pratiquez-vous actuellement une ou plusieurs activités sportives&nbsp;?</p>
+          <div class="choice-list">
+            <label class="choice-card">
+              <input type="radio" name="sportPracticed" value="oui" required>
+              <span><span class="choice-title">Oui</span><span class="choice-hint">Je pratique au moins un sport en dehors du CHU</span></span>
+            </label>
+            <label class="choice-card">
+              <input type="radio" name="sportPracticed" value="non" required>
+              <span><span class="choice-title">Non</span><span class="choice-hint">Je ne pratique pas de sport en dehors du CHU</span></span>
+            </label>
+          </div>
+        </div>
+        <section id="sport-details" class="details-panel" aria-labelledby="sport-details-title" hidden>
+          <h3 id="sport-details-title" class="details-title">Quelques précisions sur votre pratique</h3>
+          <p class="details-intro">Vous pouvez indiquer plusieurs sports dans le même champ.</p>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="sport-type">Quel(s) sport(s) pratiquez-vous en dehors du CHU&nbsp;?</label>
+              <textarea id="sport-type" name="sportType" maxlength="500" aria-describedby="sport-type-hint"></textarea>
+              <span id="sport-type-hint" class="field-hint">Séparez les activités par une virgule ou écrivez-en une par ligne.</span>
+            </div>
+            <div class="form-group">
+              <label for="sessions-per-week">Combien de séances au total par semaine en dehors du CHU&nbsp;?</label>
+              <input id="sessions-per-week" name="sessionsPerWeek" type="number" min="1" max="14" step="1" inputmode="numeric">
+              <span class="field-hint">Si vous pratiquez plusieurs sports, indiquez le total de vos séances.</span>
+            </div>
+            <div class="form-group">
+              <label for="minutes-per-session">Durée habituelle d’une séance (minutes, facultatif)</label>
+              <input id="minutes-per-session" name="minutesPerSession" type="number" min="1" max="600" step="1" inputmode="numeric">
+            </div>
+          </div>
+        </section>
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+        <div class="actions">
+          <a class="button button-secondary" href="informations.html">Précédent</a>
+          <button class="button button-primary" type="submit">Continuer vers le questionnaire</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div>
+        <p>© 2026 — Service APA. Tous droits réservés.</p>
+        <div class="rgpd-note">Ce site traite les réponses au questionnaire dans le cadre de la prévention des risques professionnels et de la santé au travail, conformément au RGPD et à la réglementation en vigueur.</div>
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="politique-confidentialite.html">Politique de confidentialité</a>
+        <a href="mailto:remyquelin@icloud.com">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const activityForm = document.getElementById('activity-form');
+    const practicedInputs = [...document.querySelectorAll('input[name="sportPracticed"]')];
+    const detailsSection = document.getElementById('sport-details');
+    const sportTypeInput = document.getElementById('sport-type');
+    const sessionsInput = document.getElementById('sessions-per-week');
+    const durationInput = document.getElementById('minutes-per-session');
+    const errorElement = document.getElementById('form-error');
+
+    function updateSportFields() {
+      const practicesSport = practicedInputs.find(input => input.checked)?.value === 'oui';
+      detailsSection.hidden = !practicesSport;
+      detailsSection.setAttribute('aria-hidden', String(!practicesSport));
+      sportTypeInput.required = practicesSport;
+      sessionsInput.required = practicesSport;
+      sportTypeInput.disabled = !practicesSport;
+      sessionsInput.disabled = !practicesSport;
+      durationInput.disabled = !practicesSport;
+      if (!practicesSport) {
+        sportTypeInput.value = '';
+        sessionsInput.value = '';
+        durationInput.value = '';
+      }
+    }
+
+    updateSportFields();
+    practicedInputs.forEach(input => input.addEventListener('change', updateSportFields));
+    try {
+      if (!sessionStorage.getItem('tms_infos')) {
+        window.location.replace('informations.html');
+      } else {
+        const savedActivity = JSON.parse(sessionStorage.getItem('tms_activity') || 'null');
+        if (savedActivity && ['oui', 'non'].includes(savedActivity.sportPracticed)) {
+          const savedChoice = practicedInputs.find(input => input.value === savedActivity.sportPracticed);
+          if (savedChoice) savedChoice.checked = true;
+          sportTypeInput.value = savedActivity.sportType || '';
+          sessionsInput.value = savedActivity.sessionsPerWeek || '';
+          durationInput.value = savedActivity.minutesPerSession || '';
+          updateSportFields();
+        }
+      }
+    } catch (error) {
+      errorElement.textContent = 'Impossible de lire vos réponses enregistrées dans cette session. Revenez à la page précédente et réessayez.';
+      errorElement.hidden = false;
+    }
+
+    activityForm.addEventListener('submit', event => {
+      event.preventDefault();
+      errorElement.hidden = true;
+      if (!activityForm.reportValidity()) return;
+
+      const activity = {
+        sportPracticed: practicedInputs.find(input => input.checked)?.value,
+        sportType: practicedInputs.find(input => input.checked)?.value === 'oui' ? sportTypeInput.value.trim() : '',
+        sessionsPerWeek: practicedInputs.find(input => input.checked)?.value === 'oui' ? Number(sessionsInput.value) : null,
+        minutesPerSession: practicedInputs.find(input => input.checked)?.value === 'oui' && durationInput.value !== '' ? Number(durationInput.value) : null
+      };
+      try {
+        sessionStorage.setItem('tms_activity', JSON.stringify(activity));
+        window.location.assign('quizz1.html');
+      } catch (error) {
+        errorElement.textContent = 'Impossible de conserver votre réponse dans cette session. Vérifiez le stockage du navigateur puis réessayez.';
+        errorElement.hidden = false;
+      }
+    });
+  </script>
+</body>
+</html>

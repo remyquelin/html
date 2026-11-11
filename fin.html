@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Questionnaire Terminé</title>
+  
+  <script src="vendor/tailwindcss-3.4.17.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif'],
+          },
+          colors: {
+            sauge: {
+              50: '#f4f6f4',
+              100: '#e5ece7',
+              200: '#cbdad0',
+              300: '#aba892',
+              400: '#8ba9a0',
+              500: '#79978e',
+              600: '#5c7870',
+              700: '#465e57',
+              800: '#354843',
+              900: '#23302d'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-[#f4f6f4] text-[#23302d] flex flex-col">
+
+  <main class="flex-1 flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-[#e5ece7] rounded-3xl p-8 border border-sauge-300 shadow-sm text-center space-y-6">
+      
+      <!-- Icône de validation -->
+      <div class="w-16 h-16 bg-sauge-500 text-white rounded-2xl flex items-center justify-center mx-auto shadow-md">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+
+      <!-- Message de fin -->
+      <div class="space-y-2">
+        <h1 id="fin-title" class="font-serif text-2xl md:text-3xl font-bold text-sauge-900">Merci d'avoir répondu</h1>
+        <p id="fin-message" class="text-sm text-sauge-700 leading-relaxed">
+          Vos réponses ont bien été enregistrées. Elles seront analysées en toute confidentialité par le service APA de la salle de sport du CHUAP.
+        </p>
+      </div>
+
+      <div class="pt-2 border-t border-sauge-200">
+        <p class="text-xs text-sauge-600">
+          Vous pouvez désormais fermer cette fenêtre.
+        </p>
+      </div>
+
+      <a id="btn-finish" href="accueil.html" class="inline-flex px-6 py-3 rounded-xl bg-sauge-500 hover:bg-sauge-600 text-white font-semibold transition-all shadow-md items-center gap-2" aria-label="Retourner à la page d'accueil">
+        <span>Retour à l'accueil</span>
+      </a>
+
+    </div>
+  </main>
+
+  <footer class="site-footer" style="margin-top:32px; background:#dfe8e3; border-top:1px solid #d2ddd6;">
+    <div style="max-width:1220px; margin:0 auto; padding:20px 16px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;">
+      <div>
+        <p style="font-size:0.86rem; color:#53645d; margin:0;">© 2026 — Service APA. Tous droits réservés.</p>
+        <div style="font-size:0.78rem; color:#53645d; line-height:1.5; max-width:620px;">Ce site traite les réponses au questionnaire dans le cadre de la prévention des risques professionnels et de la santé au travail, conformément au RGPD et à la réglementation en vigueur.</div>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:14px; align-items:center;">
+        <a href="mentions-legales.html" style="color:#23302d; text-decoration:none; font-size:0.85rem; font-weight:600;">Mentions légales</a>
+        <a href="politique-confidentialite.html" style="color:#23302d; text-decoration:none; font-size:0.85rem; font-weight:600;">Politique de confidentialité</a>
+        <a href="mailto:remyquelin@icloud.com" style="color:#23302d; text-decoration:none; font-size:0.85rem; font-weight:600;">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const titleEl = document.getElementById('fin-title');
+      const messageEl = document.getElementById('fin-message');
+      if (sessionStorage.getItem('tms_saved') !== '1') {
+        titleEl.textContent = 'Questionnaire non envoyé';
+        messageEl.textContent = 'Aucun enregistrement confirmé n’a été détecté. Recommencez le questionnaire depuis la page d’accueil.';
+      }
+    });
+  </script>
+
+</body>
+</html>

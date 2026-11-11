@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Louise Burette — Enseignante APA</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Playfair Display et Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: {
+                            50: '#fdfbf7',
+                            100: '#f7f2e8',
+                            200: '#f4ecd8',
+                            300: '#e3d3b6',
+                            400: '#c5b08b',
+                        },
+                        warm: {
+                            dark: '#4a4039',
+                            muted: '#796b5f',
+                            light: '#a69788',
+                            accent: '#8c7355'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fdfbf7;
+            color: #4a4039;
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(227, 211, 182, 0.4);
+        }
+        .hero-pattern {
+            background-image: radial-gradient(#e3d3b6 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        /* ── Scroll-reveal animations ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(32px);
+            transition: opacity 0.65s ease, transform 0.65s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-32px);
+            transition: opacity 0.65s ease, transform 0.65s ease;
+        }
+        .reveal-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(32px);
+            transition: opacity 0.65s ease, transform 0.65s ease;
+        }
+        .reveal-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        /* Staggered delay helpers */
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+        .delay-4 { transition-delay: 0.4s; }
+        .delay-5 { transition-delay: 0.5s; }
+
+        /* ── Nav active link indicator ── */
+        .nav-link {
+            position: relative;
+            padding-bottom: 2px;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #8c7355;
+            border-radius: 2px;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-link.active {
+            color: #4a4039 !important;
+            font-weight: 600;
+        }
+        .nav-link.active::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-cream-50 text-warm-dark antialiased selection:bg-cream-300 selection:text-warm-dark">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-40 bg-cream-50/90 backdrop-blur-md border-b border-cream-200">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+            <!-- Accueil à gauche + logo -->
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="px-5 py-2.5 rounded-full bg-cream-200 text-warm-dark hover:bg-cream-300 transition shadow-sm text-sm font-medium">Accueil</a>
+                <a href="#" class="font-serif text-2xl font-bold tracking-tight text-warm-dark flex items-center space-x-2">
+                     <span>Louise Burette</span>
+                </a>
+            </div>
+            <!-- Liens de navigation à droite -->
+            <div class="hidden md:flex md:items-center md:justify-end space-x-5 text-sm font-medium text-warm-muted">
+                <a href="#about" class="nav-link hover:text-warm-dark transition" data-section="about">À propos</a>
+                <a href="#projects" class="nav-link hover:text-warm-dark transition" data-section="projects">Projets</a>
+                <a href="#experience" class="nav-link hover:text-warm-dark transition" data-section="experience">Expériences</a>
+                <a href="#education" class="nav-link hover:text-warm-dark transition" data-section="education">Formations</a>
+                <a href="#skills" class="nav-link hover:text-warm-dark transition" data-section="skills">Compétences</a>
+                <a href="#contact" class="px-5 py-2.5 rounded-full bg-warm-dark text-cream-50 hover:bg-warm-accent transition shadow-sm">Contact</a>
+            </div>
+            <!-- Mobile Menu Toggle -->
+            <button id="menu-btn" class="md:hidden text-warm-dark focus:outline-none text-xl p-2">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+        <!-- Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-cream-100 border-b border-cream-200 px-6 py-4 space-y-3">
+            <a href="index.html" class="block text-warm-dark font-medium py-1">Accueil</a>
+            <a href="#about" class="block text-warm-dark font-medium py-1">À propos</a>
+            <a href="#projects" class="block text-warm-dark font-medium py-1">Projets</a>
+            <a href="#experience" class="block text-warm-dark font-medium py-1">Expériences</a>
+            <a href="#education" class="block text-warm-dark font-medium py-1">Formations</a>
+            <a href="#skills" class="block text-warm-dark font-medium py-1">Compétences</a>
+            <a href="#contact" class="block text-warm-dark font-medium py-1">Contact</a>
+        </div>
+    </nav>
+
+    <header class="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-28">
+        <div class="max-w-6xl mx-auto px-6">
+            <!-- Layout côte à côte : texte + photo -->
+            <div class="flex flex-col-reverse md:flex-row items-center gap-10 md:gap-16">
+                <!-- Texte à gauche -->
+                <div class="flex-1 text-center md:text-left">
+                    <h1 class="font-serif text-4xl sm:text-6xl md:text-7xl font-bold text-warm-dark tracking-tight mb-6">
+                        Louise Burette
+                    </h1>
+                    <p class="text-xl sm:text-2xl font-medium text-warm-muted mb-6 font-serif italic">
+                        « Mon objectif : se mouvoir pour se sentir mieux ! »
+                    </p>
+                    <p class="text-warm-muted text-base sm:text-lg leading-relaxed mb-10">
+                        Passionnée par le bien-être à travers les activités physiques adaptées, j’aimerais transmettre mes connaissances et mes compétences. Je m’investis sérieusement et avec dynamisme dans chacun de mes projets pour intégrer l’activité physique dans le quotidien de chacun.
+                    </p>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                        <a href="https://www.linkedin.com/in/louise-burette/" target="_blank" rel="noopener noreferrer" class="px-8 py-4 rounded-full bg-warm-dark text-cream-50 font-semibold hover:bg-warm-accent transition shadow-lg shadow-warm-dark/10 flex items-center space-x-3">
+                            <i class="fa-brands fa-linkedin text-lg"></i>
+                            <span>Mon profil LinkedIn</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i>
+                        </a>
+                        <a href="assets/cv-louise-burette.pdf" download="CV-Louise-Burette.pdf" class="px-8 py-4 rounded-full bg-cream-200 text-warm-dark font-semibold hover:bg-cream-300 transition shadow-sm flex items-center space-x-3">
+                            <i class="fa-solid fa-file-arrow-down"></i>
+                            <span>Télécharger mon CV</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Photo à droite -->
+                <div class="shrink-0">
+                    <div class="w-56 h-72 sm:w-64 sm:h-80 md:w-72 md:h-96 rounded-3xl bg-gradient-to-tr from-cream-300 to-cream-100 p-2 shadow-2xl">
+                        <img src="assets/photo-profil.png" alt="Photo de profil de Louise Burette" class="w-full h-full rounded-2xl object-cover">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- About et Philosophy -->
+    <section id="about" class="py-20" style="background:#ffffff; border-top:1px solid #ede8df; border-bottom:1px solid #ede8df;">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="mb-4 reveal"><span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest" style="background:#ede8df;color:#796b5f;">À propos</span></div>
+            <div class="reveal">
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-warm-dark mb-4">Mon approche et ma vision</h2>
+                <p class="text-warm-muted leading-relaxed text-base sm:text-lg mb-6">
+                    En tant qu’enseignante APA (activités physiques adaptées), j’aide chacun à développer ses objectifs de santé, de rééducation et de bien-être. Que ce soit auprès du personnel hospitalier, des personnes âgées ou de publics spécifiques, chaque séance est pensée sur mesure.
+                </p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 rounded-2xl bg-cream-50 border border-cream-200 reveal delay-1">
+                        <i class="fa-solid fa-graduation-cap text-warm-accent text-2xl mb-2"></i>
+                        <h3 class="font-semibold text-warm-dark">Master en cours</h3>
+                        <p class="text-xs text-warm-muted mt-1">Ingénierie de la Rééducation du Handicap et de la Performance Motrice (UPJV)</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-cream-50 border border-cream-200 reveal delay-2">
+                        <i class="fa-solid fa-hands-holding-child text-warm-accent text-2xl mb-2"></i>
+                        <h3 class="font-semibold text-warm-dark">Expérience de terrain</h3>
+                        
+                        <p class="text-xs text-warm-muted mt-1">CHU, EHPAD, Foyers spécialisés et Milieu associatif</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-24" style="background:#fdf8f2; border-top:1px solid #ede8df; border-bottom:1px solid #ede8df;"><div class="max-w-5xl mx-auto px-6">
+        <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+            <span class="text-xs font-semibold uppercase tracking-widest text-warm-accent">Prévention et santé au travail</span>
+            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-warm-dark mt-2">Projets</h2>
+            <div class="w-16 h-1 bg-cream-300 mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <div class="space-y-6">
+            <article class="glass-card p-6 sm:p-8 rounded-3xl shadow-sm reveal">
+                <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">Projet au CHU d’Amiens</span>
+                <h3 class="font-serif text-xl font-bold text-warm-dark mt-3 mb-4">Présentation du projet</h3>
+
+                <div class="rounded-2xl bg-cream-50 border border-cream-200 p-5 sm:p-6">
+                    <h4 class="font-serif text-lg font-bold text-warm-dark mb-4">Mon projet : Prévention des TMS et Activité Physique Adaptée au CHU d’Amiens</h4>
+                    <div class="text-warm-muted text-sm sm:text-base leading-relaxed space-y-3">
+                        <p>
+                            Mon projet vise à améliorer la santé au travail des professionnels à travers un plan d'intervention structuré en plusieurs étapes, combinant un outil de diagnostic numérique et un accompagnement physique sur mesure au sein du <strong class="text-warm-dark">CHU d’Amiens</strong>.
+                        </p>
+                        <ul class="list-disc space-y-2 pl-5">
+                            <li>
+                                <strong class="text-warm-dark">Phase 1 : Communication</strong>
+                                <ul class="list-disc space-y-1 pl-5 mt-1">
+                                    <li>Sensibilisation et diffusion de l'information auprès des professionnels pour présenter la démarche et encourager la participation.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong class="text-warm-dark">Phase 2 : Tests avant la prise en charge</strong>
+                                <ul class="list-disc space-y-1 pl-5 mt-1">
+                                    <li><strong class="text-warm-dark">Évaluation initiale via un outil de diagnostic interactif :</strong> deux questionnaires courts, permettant à chacun d’évaluer ses douleurs au travail et d’identifier ses zones de tension, notamment face aux risques de troubles musculo-squelettiques (TMS).</li>
+                                    <li><strong class="text-warm-dark">Profilage et analyse des besoins ciblés :</strong> les réponses aux questionnaires permettent de mieux comprendre la situation de chaque personne et de cerner précisément ses besoins corporels et professionnels.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong class="text-warm-dark">Phase 3 : Prise en charge</strong>
+                                <ul class="list-disc space-y-1 pl-5 mt-1">
+                                    <li><strong class="text-warm-dark">Des séances de sport adapté sur mesure :</strong> en fonction des résultats obtenus, je propose des séances d’Activité Physique Adaptée (APA) personnalisées, conçues pour prévenir les douleurs, soulager le corps et améliorer le bien-être au quotidien.</li>
+                                    <li>Suivi modulable incluant une prise en charge APA sur 3 mois, ou une prise en charge étendue combinant APA et éducation à la santé sur 3 mois.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong class="text-warm-dark">Phase 4 : Tests après la prise en charge</strong>
+                                <ul class="list-disc space-y-1 pl-5 mt-1">
+                                    <li>Évaluation de fin de parcours pour mesurer l'évolution des douleurs, des tensions et des bénéfices apportés par le programme.</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong class="text-warm-dark">Phase 5 : Analyse des résultats, comparaisons et conclusion</strong>
+                                <ul class="list-disc space-y-1 pl-5 mt-1">
+                                    <li>Bilan global de l'intervention, analyse comparative des tests avant/après, et conclusions sur l'impact de la démarche pour la santé des professionnels du CHU.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <article class="glass-card p-6 sm:p-8 rounded-3xl shadow-sm reveal">
+                <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">Master IRHPM</span>
+                <h3 class="font-serif text-xl font-bold text-warm-dark mt-3 mb-4">Qu’est-ce que le Master IRHPM ?</h3>
+                <p class="text-warm-muted text-sm sm:text-base leading-relaxed">
+                    Ce master apporte des connaissances sur la prévention santé en entreprise. Il permet notamment de concevoir et de mettre en place des projets de prévention primaire afin d’améliorer la santé biopsychosociale des salariés au sein des entreprises.
+                </p>
+            </article>
+
+            <article class="glass-card p-6 sm:p-8 rounded-3xl shadow-sm reveal">
+                <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">Projet 2026-2027</span>
+                <h3 class="font-serif text-xl font-bold text-warm-dark mt-3 mb-4">Prévention des troubles musculo-squelettiques au CHU Amiens-Picardie</h3>
+                <p class="text-warm-muted text-sm sm:text-base leading-relaxed">
+                    Projet mené dans le cadre de la prévention des troubles musculo-squelettiques (TMS) au CHU Amiens-Picardie. Il porte sur la mise en place d’un programme d’activité physique adaptée et de prévention santé auprès des aides-soignants et des manipulateurs en électroradiologie médicale (MERM).
+                </p>
+            </article>
+        </div>
+    </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="py-24" style="background:#fef6f4; border-top:1px solid #ede8df; border-bottom:1px solid #ede8df;"><div class="max-w-5xl mx-auto px-6">
+        <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+            <span class="text-xs font-semibold uppercase tracking-widest text-warm-accent">Parcours professionnel et stages</span>
+            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-warm-dark mt-2">Expériences et Stages</h2>
+            <div class="w-16 h-1 bg-cream-300 mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <div class="space-y-6">
+            <!-- Item 1 -->
+            <div class="glass-card p-6 sm:p-8 rounded-3xl shadow-sm hover:shadow-md transition reveal">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">Stage M1 IRHPM</span>
+                        <h3 class="font-serif text-xl font-bold text-warm-dark mt-2">Stagiaire - Enseignante APA</h3>
+                        <p class="text-warm-accent font-medium text-sm">CHU Amiens-Picardie · Salle de sport du CHU-AP</p>
+                    </div>
+                    <span class="inline-flex items-center text-xs font-semibold text-warm-muted bg-cream-100 px-3 py-1 rounded-lg w-fit">
+                        <i class="fa-regular fa-calendar mr-2"></i> oct. 2026 - aujourd’hui · 2 mois
+                    </span>
+                </div>
+                <p class="text-warm-muted text-sm sm:text-base leading-relaxed">
+                    Stagiaire à la salle de sport du CHU-AP en tant qu'enseignante APA. Activités physiques pour le personnel soignant du centre hospitalier.
+                </p>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="glass-card p-6 sm:p-8 rounded-3xl shadow-sm hover:shadow-md transition reveal">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">CDD</span>
+                        <h3 class="font-serif text-xl font-bold text-warm-dark mt-2">Opératrice de station-service</h3>
+                        <p class="text-warm-accent font-medium text-sm">Avia · Villeneuve-sur-Aisne</p>
+                    </div>
+                    <span class="inline-flex items-center text-xs font-semibold text-warm-muted bg-cream-100 px-3 py-1 rounded-lg w-fit">
+                        <i class="fa-regular fa-calendar mr-2"></i> juil. 2023 - août 2026 · 44 semaines
+                    </span>
+                </div>
+                <p class="text-warm-muted text-sm sm:text-base leading-relaxed mb-3">
+                    Emploi saisonnier - Opératrice de station-service pendant les périodes scolaires :
+                </p>
+                <ul class="text-xs text-warm-muted space-y-1 pl-4 list-disc">
+                    <li>Juillet 2026 - Août 2026</li>
+                    <li>Février 2026</li>
+                    <li>Juin 2025 - Août 2025</li>
+                    <li>Février 2025</li>
+                    <li>Juin 2024 - Août 2024</li>
+                    <li>Décembre 2023 - Janvier 2024</li>
+                    <li>Juillet 2023 - Août 2023</li>
+                </ul>
+            </div>
+
+             <div class="glass-card p-6 sm:p-8 rounded-3xl shadow-sm hover:shadow-md transition reveal">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">CDD</span>
+                        <h3 class="font-serif text-xl font-bold text-warm-dark mt-2">Palissage & vendanges</h3>
+                        <p class="text-warm-accent font-medium text-sm">Champagne Prevoteaux Thenault</p>
+                    </div>
+                    <span class="inline-flex items-center text-xs font-semibold text-warm-muted bg-cream-100 px-3 py-1 rounded-lg w-fit">
+                        <i class="fa-regular fa-calendar mr-2"></i> 4 semaines en 2026
+                    </span>
+                </div>
+                <p class="text-warm-muted text-sm sm:text-base leading-relaxed">
+               Emploi saisonnier - Palissage et vendanges dans les vignes du Champagne Prevoteaux Thenault.   
+                </p>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="glass-card p-6 sm:p-8 rounded-3xl shadow-sm hover:shadow-md transition reveal">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">Stage L3 APA</span>
+                        <h3 class="font-serif text-xl font-bold text-warm-dark mt-2">Stagiaire</h3>
+                        <p class="text-warm-accent font-medium text-sm">CHU de Reims - EHPAD Roederer</p>
+                    </div>
+                    <span class="inline-flex items-center text-xs font-semibold text-warm-muted bg-cream-100 px-3 py-1 rounded-lg w-fit">
+                        <i class="fa-regular fa-calendar mr-2"></i> déc. 2025 - févr. 2026 · 3 mois
+                    </span>
+                </div>
+                <p class="text-warm-muted text-sm sm:text-base leading-relaxed">
+                    Stage de troisième année de licence dans un établissement pour personnes âgées. Préparation de diverses séances d’APA, gestion de transferts dans des véhicules TPMR, connaissances sur le fonctionnement des EHPAD du CHU de Reims.
+                </p>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="glass-card p-6 sm:p-8 rounded-3xl shadow-sm hover:shadow-md transition reveal">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">Stage L2 APA</span>
+                        <h3 class="font-serif text-xl font-bold text-warm-dark mt-2">Stagiaire</h3>
+                        <p class="text-warm-accent font-medium text-sm">Les Trois Foyers - Association les Papillons Blancs en Champagne · Bétheny</p>
+                    </div>
+                    <span class="inline-flex items-center text-xs font-semibold text-warm-muted bg-cream-100 px-3 py-1 rounded-lg w-fit">
+                        <i class="fa-regular fa-calendar mr-2"></i> janv. 2025 · 1 mois
+                    </span>
+                </div>
+                <p class="text-warm-muted text-sm sm:text-base leading-relaxed mb-3">
+                    Stage de deux semaines aux Trois Foyers, foyer pour adultes déficients intellectuels. Stage en activité physique adaptée. Sens de l’organisation, travail en équipe pluridisciplinaire.
+                </p>
+            </div>
+
+            <!-- Item 5 et 6 -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="glass-card p-6 rounded-3xl shadow-sm reveal">
+                    <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">Stage</span>
+                    <span class="inline-flex items-center text-xs font-semibold text-warm-muted bg-cream-100 px-3 py-1 rounded-lg w-fit">
+                        <i class="fa-regular fa-calendar mr-2"></i> juin 2021 · 1 semaine 
+                    </span>
+                    <h3 class="font-serif text-lg font-bold text-warm-dark mt-1">Stage d'observation en gendarmerie</h3>
+                    <p class="text-warm-muted text-xs font-medium mb-2">Gendarmerie Nationale · LAON</p>
+                </div>
+                <div class="glass-card p-6 rounded-3xl shadow-sm reveal">
+                    <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">Stage</span>
+                    <span class="inline-flex items-center text-xs font-semibold text-warm-muted bg-cream-100 px-3 py-1 rounded-lg w-fit">
+                        <i class="fa-regular fa-calendar mr-2"></i> mars 2020 · 1 semaine 
+                    </span>
+
+                    <h3 class="font-serif text-lg font-bold text-warm-dark mt-1">Stage découverte de l’industrie pharmaceutique</h3>
+                    <p class="text-warm-muted text-xs font-medium mb-2">DELPHARM · REIMS</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="py-24" style="background:#f4f6fb; border-top:1px solid #ede8df; border-bottom:1px solid #ede8df;">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-2" style="background:#ede8df;color:#796b5f;">Parcours universitaire et diplômes</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-warm-dark mt-2">Formations</h2>
+                <div class="w-16 h-1 bg-cream-300 mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Master -->
+                <div class="glass-card p-8 rounded-3xl shadow-sm flex flex-col justify-between reveal">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">Université</span>
+                            <span class="text-xs font-semibold text-warm-muted">sept. 2026 à aujourd'hui</span>
+                        </div>
+                        <h3 class="font-serif text-xl font-bold text-warm-dark">Master Ingénierie de la Rééducation, du Handicap et de la Performance Motrice (IRHPM)</h3>
+                        <p class="text-warm-accent font-medium text-sm mt-1"> Université de Picardie Jules Verne (UPJV)</p>
+                    </div>
+                </div>
+                <!-- Licence -->
+                <div class="glass-card p-8 rounded-3xl shadow-sm flex flex-col justify-between reveal">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">Université</span>
+                            <span class="text-xs font-semibold text-warm-muted">sept. 2023 – juin 2026</span>
+                        </div>
+                        <h3 class="font-serif text-xl font-bold text-warm-dark">Licence Sciences et Techniques des Activités Physiques et Sportives - Activités Physiques Adaptées Santé (STAPS APA-S)</h3>
+                        <p class="text-warm-accent font-medium text-sm mt-1"> Université de Picardie Jules Verne (UPJV)</p>
+                    </div>
+                </div>
+
+                <!-- DEUG -->
+                <div class="glass-card p-8 rounded-3xl shadow-sm flex flex-col justify-between reveal">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">Université</span>
+                            <span class="text-xs font-semibold text-warm-muted">sept. 2023 – juin 2025</span>
+                        </div>
+                        <h3 class="font-serif text-xl font-bold text-warm-dark">Diplôme d'Études Universitaires Générales (DEUG STAPS)</h3>
+                        <p class="text-warm-accent font-medium text-sm mt-1">Université de Picardie Jules Verne (UPJV)</p>
+                    </div>
+                </div>
+
+                <!-- Baccalauréat -->
+                <div class="glass-card p-8 rounded-3xl shadow-sm flex flex-col justify-between reveal">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-3 py-1 rounded-full bg-cream-200 text-warm-dark text-xs font-semibold">Lycée</span>
+                            <span class="text-xs font-semibold text-warm-muted">sept. 2020 – juin 2023</span>
+                        </div>
+                        <h3 class="font-serif text-xl font-bold text-warm-dark">Baccalauréat</h3>
+                        <p class="text-warm-accent font-medium text-sm mt-1">Lycée Saint Jean XXIII</p>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compétences, langues et bénévolat -->
+    <section id="skills" class="py-24" style="background:#fdf5f0; border-top:1px solid #ede8df; border-bottom:1px solid #ede8df;"><div class="max-w-5xl mx-auto px-6">
+        <div class="text-center max-w-2xl mx-auto mb-16 reveal">
+            <span class="text-xs font-semibold uppercase tracking-widest text-warm-accent">Expertises et Atouts</span>
+            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-warm-dark mt-2">Compétences, Langues et Bénévolat</h2>
+            <div class="w-16 h-1 bg-cream-300 mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Professional Skills -->
+            <div class="glass-card p-8 rounded-3xl shadow-sm md:col-span-2 reveal">
+                <h3 class="font-serif text-xl font-bold text-warm-dark mb-6 flex items-center">
+                    <i class="fa-solid fa-star text-warm-accent mr-3"></i> Compétences 
+                </h3>
+                <div class="flex flex-wrap gap-2.5">
+                    <span class="px-4 py-2 rounded-xl bg-cream-100 text-warm-dark text-sm font-medium border border-cream-200">Encadrement de séances d’activités physiques adaptées</span>
+                    <span class="px-4 py-2 rounded-xl bg-cream-100 text-warm-dark text-sm font-medium border border-cream-200">Pédagogie</span>
+                    <span class="px-4 py-2 rounded-xl bg-cream-100 text-warm-dark text-sm font-medium border border-cream-200">Activités sportives</span>
+                    <span class="px-4 py-2 rounded-xl bg-cream-100 text-warm-dark text-sm font-medium border border-cream-200">Sens de l’écoute</span>
+                    <span class="px-4 py-2 rounded-xl bg-cream-100 text-warm-dark text-sm font-medium border border-cream-200">Sens de l’organisation</span>
+                    <span class="px-4 py-2 rounded-xl bg-cream-100 text-warm-dark text-sm font-medium border border-cream-200">Adaptabilité</span>
+                    <span class="px-4 py-2 rounded-xl bg-cream-100 text-warm-dark text-sm font-medium border border-cream-200">Travail en équipe pluridisciplinaire</span>
+                    <span class="px-4 py-2 rounded-xl bg-cream-100 text-warm-dark text-sm font-medium border border-cream-200">Service client</span>
+                    <span class="px-4 py-2 rounded-xl bg-cream-100 text-warm-dark text-sm font-medium border border-cream-200">Microsoft Office</span>
+                    <span class="px-4 py-2 rounded-xl bg-cream-100 text-warm-dark text-sm font-medium border border-cream-200">Adobe Lightroom</span>
+                    <span class="px-4 py-2 rounded-xl bg-cream-100 text-warm-dark text-sm font-medium border border-cream-200">Espagnol</span>
+                </div>
+            </div>
+
+            <!-- Languages et Certifications -->
+            <div class="space-y-8">
+                <div class="glass-card p-8 rounded-3xl shadow-sm reveal">
+                    <h3 class="font-serif text-xl font-bold text-warm-dark mb-4 flex items-center">
+                        <i class="fa-solid fa-language text-warm-accent mr-3"></i> Langues 
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm font-semibold text-warm-dark mb-1">
+                                <span>Anglais</span>
+                                <span class="text-xs text-warm-muted">Capacité professionnelle limitée</span>
+                            </div>
+                            <div class="w-full bg-cream-200 h-2 rounded-full overflow-hidden">
+                                <div class="bg-warm-accent h-full rounded-full" style="width: 50%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-sm font-semibold text-warm-dark mb-1">
+                                <span>Espagnol</span>
+                                <span class="text-xs text-warm-muted">Capacité professionnelle limitée</span>
+                            </div>
+                            <div class="w-full bg-cream-200 h-2 rounded-full overflow-hidden">
+                                <div class="bg-warm-accent h-full rounded-full" style="width: 50%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-8 rounded-3xl shadow-sm reveal">
+                    <h3 class="font-serif text-xl font-bold text-warm-dark mb-3 flex items-center">
+                        <i class="fa-solid fa-certificate text-warm-accent mr-3"></i> Certification
+                    </h3>
+                    <div class="flex items-center space-x-3 p-3 rounded-2xl bg-cream-100">
+                        <div class="w-10 h-10 rounded-xl bg-cream-200 flex items-center justify-center text-warm-accent font-bold">PIX</div>
+                        <div>
+                            <h4 class="font-semibold text-sm text-warm-dark">Certification PIX (Pix)</h4>
+                            <p class="text-xs text-warm-muted">Émise en mars 2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Volunteering Section -->
+        <div class="mt-12 glass-card p-8 rounded-3xl shadow-sm reveal">
+            <h3 class="font-serif text-xl font-bold text-warm-dark mb-6 flex items-center">
+                <i class="fa-solid fa-hands-holding-heart text-warm-accent mr-3"></i> Bénévolat 
+            </h3>
+            <div class="grid sm:grid-cols-2 gap-6">
+                <div class="p-4 rounded-2xl bg-cream-50 border border-cream-200">
+                    <h4 class="font-semibold text-warm-dark">Bénévole - Journée Amiénoise du Sport et du Handicap (JASH)</h4>
+                    <p class="text-xs text-warm-muted mt-1">Attestation de bénévolat</p>
+                </div>
+                <div class="p-4 rounded-2xl bg-cream-50 border border-cream-200">
+                    <h4 class="font-semibold text-warm-dark">Bénévole - US Guignicourt football</h4>
+                    <p class="text-xs text-warm-muted mt-1">Bénévole lors d’un tournoi de football de 3 jours</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <!-- Contact et Footer Section -->
+    <footer id="contact" class="bg-warm-dark text-cream-50 pt-20 pb-12">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="pb-16 border-b border-warm-muted/30 text-center">
+                <div class="max-w-3xl mx-auto">
+                    <span class="text-xs font-semibold uppercase tracking-widest text-cream-300">Contact</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-cream-50 mt-2 mb-4">Échangeons sur vos projets</h2>
+                    <p class="text-cream-200 text-sm sm:text-base leading-relaxed mb-8">
+                        Vous recherchez une alternante pour 2027-2028 ou souhaitez mettre en place un projet d’activités physiques adaptées et de prévention santé ? N’hésitez pas, je serais ravie d’échanger avec vous.
+                    </p>
+                    <div class="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                        <a href="mailto:louise.burette@orange.fr" class="inline-flex min-h-14 items-center justify-center gap-3 rounded-full bg-cream-200 px-5 py-4 text-sm font-semibold text-warm-dark shadow-sm transition hover:bg-cream-300 focus:outline-none focus:ring-2 focus:ring-cream-50 focus:ring-offset-2 focus:ring-offset-warm-dark">
+                            <i class="fa-solid fa-envelope"></i>
+                            <span>M’envoyer un e-mail</span>
+                        </a>
+                        <a href="https://www.linkedin.com/in/louise-burette/" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-14 items-center justify-center gap-3 rounded-full border border-warm-muted/60 bg-warm-muted/20 px-5 py-4 text-sm font-semibold text-cream-50 transition hover:bg-warm-muted/40 focus:outline-none focus:ring-2 focus:ring-cream-50 focus:ring-offset-2 focus:ring-offset-warm-dark">
+                            <i class="fa-brands fa-linkedin text-lg"></i>
+                            <span>Mon profil LinkedIn</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        </a>
+                        <a href="assets/cv-louise-burette.pdf" download="CV-Louise-Burette.pdf" class="inline-flex min-h-14 items-center justify-center gap-3 rounded-full border border-warm-muted/60 bg-warm-muted/20 px-5 py-4 text-sm font-semibold text-cream-50 transition hover:bg-warm-muted/40 focus:outline-none focus:ring-2 focus:ring-cream-50 focus:ring-offset-2 focus:ring-offset-warm-dark">
+                            <i class="fa-solid fa-file-arrow-down"></i>
+                            <span>Télécharger mon CV</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-cream-300/70">
+                <p>&copy; 2026 Louise Burette — Tous droits réservés.</p>
+                <p class="mt-2 sm:mt-0 font-serif italic">Mon objectif : se mouvoir pour se sentir mieux !</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript interactivity -->
+    <script>
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+    </script>
+
+    <script>
+        // Scroll-reveal with IntersectionObserver
+        const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    // Stagger siblings inside the same parent
+                    const siblings = [...entry.target.parentElement.querySelectorAll('.reveal, .reveal-left, .reveal-right')];
+                    const idx = siblings.indexOf(entry.target);
+                    entry.target.style.transitionDelay = (idx * 0.1) + 's';
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12 });
+        revealEls.forEach(el => revealObserver.observe(el));
+    </script>
+    <script>
+        // ── Scroll-reveal ──────────────────────────────────────────────────────
+        (function() {
+            var els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+            if (!els.length) return;
+            var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        var siblings = Array.from(entry.target.parentElement.querySelectorAll('.reveal, .reveal-left, .reveal-right'));
+                        var idx = siblings.indexOf(entry.target);
+                        // respect existing delay class, else stagger
+                        if (!entry.target.className.match(/delay-\d/)) {
+                            entry.target.style.transitionDelay = (idx * 0.1) + 's';
+                        }
+                        entry.target.classList.add('visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            els.forEach(function(el) { obs.observe(el); });
+        })();
+
+        // ── Nav active section indicator ───────────────────────────────────────
+        (function() {
+            var sections = ['about', 'projects', 'experience', 'education', 'skills', 'contact'];
+            var navLinks = document.querySelectorAll('.nav-link[data-section]');
+
+            function setActive(id) {
+                navLinks.forEach(function(link) {
+                    if (link.dataset.section === id) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            var sectionObs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        setActive(entry.target.id);
+                    }
+                });
+            }, { rootMargin: '-30% 0px -60% 0px' });
+
+            sections.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) sectionObs.observe(el);
+            });
+        })();
+    </script>
+</body>
+</html>

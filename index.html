@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none';">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Louise Burette — Accueil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Univers du portfolio */
+      --cream: #fdfbf7;
+      --cream-deep: #f4ecd8;
+      --cream-line: #e3d3b6;
+      --warm-dark: #4a4039;
+      --warm-accent: #8c7355;
+      /* Univers du questionnaire TMS */
+      --sage: #e5ece7;
+      --sage-line: #d2ddd6;
+      --sage-ink: #1c2d27;
+      --sage-muted: #53645d;
+      --sage-btn: #8ba9a0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--cream);
+      color: var(--warm-dark);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .top {
+      background: var(--cream);
+      border-bottom: 1px solid var(--cream-line);
+      padding: 20px 24px;
+      text-align: center;
+    }
+
+    .top h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--warm-dark);
+    }
+
+    .top p {
+      font-size: 0.95rem;
+      color: var(--warm-accent);
+      margin-top: 2px;
+    }
+
+    .choices {
+      flex: 1;
+      display: flex;
+    }
+
+    .choice {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 64px clamp(28px, 6vw, 96px);
+      text-decoration: none;
+      transition: flex-grow 0.45s ease;
+      position: relative;
+      outline: none;
+    }
+
+    .choice:hover,
+    .choice:focus-visible { flex-grow: 1.25; }
+
+    .choice-inner { max-width: 440px; margin: 0 auto; width: 100%; }
+
+    .choice h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2rem, 3.6vw, 3rem);
+      font-weight: 600;
+      line-height: 1.12;
+      margin-bottom: 16px;
+    }
+
+    .choice p {
+      font-size: 1.05rem;
+      max-width: 38ch;
+      margin-bottom: 32px;
+    }
+
+    .cta {
+      display: inline-block;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 14px 26px;
+      border-radius: 6px;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    /* Portfolio */
+    .choice-portfolio {
+      background-color: var(--cream);
+      background-image: radial-gradient(var(--cream-line) 1px, transparent 1px);
+      background-size: 32px 32px;
+      color: var(--warm-dark);
+    }
+    .choice-portfolio p { color: #796b5f; }
+    .choice-portfolio .cta {
+      background: var(--warm-dark);
+      color: var(--cream);
+    }
+    .choice-portfolio:hover .cta,
+    .choice-portfolio:focus-visible .cta { background: var(--warm-accent); }
+    .choice-portfolio:focus-visible { box-shadow: inset 0 0 0 3px var(--warm-accent); }
+
+    /* Questionnaire TMS */
+    .choice-tms {
+      background-color: var(--sage);
+      border-left: 1px solid var(--sage-line);
+      color: var(--sage-ink);
+    }
+    .choice-tms p { color: var(--sage-muted); }
+    .choice-tms .cta {
+      background: var(--sage-btn);
+      color: #ffffff;
+    }
+    .choice-tms:hover .cta,
+    .choice-tms:focus-visible .cta { background: #79978e; }
+    .choice-tms:focus-visible { box-shadow: inset 0 0 0 3px #6a887f; }
+
+    @media (max-width: 800px) {
+      .choices { flex-direction: column; }
+      .choice { padding: 48px 28px; }
+      .choice:hover, .choice:focus-visible { flex-grow: 1; }
+      .choice-tms { border-left: none; border-top: 1px solid var(--sage-line); }
+      .top h1 { font-size: 1.3rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .choice, .cta { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top">
+    <h1>Louise Burette</h1>
+    <p>Que souhaitez-vous consulter ?</p>
+  </header>
+
+  <main class="choices">
+
+    <a class="choice choice-portfolio" href="portfolio.html">
+      <div class="choice-inner">
+        <h2>Portfolio</h2>
+        <p>Parcours, formations et expériences de Louise Burette, enseignante APA.</p>
+        <span class="cta">Voir le portfolio</span>
+      </div>
+    </a>
+
+    <a class="choice choice-tms" href="accueil.html">
+      <div class="choice-inner">
+        <h2>Comprendre vos douleurs au travail</h2>
+        <p>Deux questionnaires courts, environ dix minutes, pour mieux prévenir les troubles musculo-squelettiques.</p>
+        <span class="cta">Commencer le questionnaire</span>
+      </div>
+    </a>
+
+  </main>
+
+</body>
+</html>

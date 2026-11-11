@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Questionnaire - Conditions de travail</title>
+  
+  <script src="vendor/tailwindcss-3.4.17.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif'],
+          },
+          colors: {
+            sauge: {
+              50: '#f4f6f4',
+              100: '#e5ece7',
+              200: '#cbdad0',
+              300: '#aba892',
+              400: '#8ba9a0',
+              500: '#79978e',
+              600: '#5c7870',
+              700: '#465e57',
+              800: '#354843',
+              900: '#23302d'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #f4f6f4;
+      color: #23302d;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .font-serif-custom {
+      font-family: 'Playfair Display', serif;
+    }
+    .bg-card {
+      background-color: #e5ece7;
+    }
+    .site-footer {
+      background-color: #dfe8e3;
+      border-top: 1px solid #d2ddd6;
+      margin-top: 32px;
+    }
+    .site-footer-inner {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 20px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .site-footer p {
+      font-size: 0.86rem;
+      color: #53645d;
+    }
+    .site-footer .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+    .site-footer a {
+      color: #23302d;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .site-footer a:hover { text-decoration: underline; }
+    .rgpd-note {
+      font-size: 0.78rem;
+      color: #53645d;
+      line-height: 1.5;
+      max-width: 620px;
+    }
+    .admin-link {
+      background-color: transparent;
+      border: 1px solid #d0d7d3;
+      color: #23302d;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .admin-link:hover {
+      background-color: #ffffff;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-sauge-400 selection:text-white">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-sauge-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <h1 class="font-serif-custom font-bold text-2xl text-sauge-900">Évaluation du Travail</h1>
+        <p class="text-xs text-sauge-600">Questionnaire sur vos conditions de travail et ressentis</p>
+      </div>
+
+      <!-- Progress Bar & Counter -->
+      <div class="w-full md:w-64 flex flex-col gap-1.5">
+        <div class="flex justify-between text-xs font-semibold text-sauge-700">
+          <span>Avancement</span>
+          <span id="progress-text">Question 1 / 10</span>
+        </div>
+        <div class="w-full bg-sauge-100 rounded-full h-2.5 overflow-hidden border border-sauge-200">
+          <div id="progress-bar" class="bg-sauge-400 h-2.5 rounded-full transition-all duration-300" style="width: 9.09%"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-3xl w-full mx-auto px-4 sm:px-6 py-8">
+
+    <form id="quizz2-form" onsubmit="return false;" class="space-y-6">
+      
+      <p class="rounded-xl border border-sauge-200 bg-white px-4 py-3 text-sm text-sauge-700">
+        En pensant au mois passé, indiquez combien de fois chaque situation s’est produite. Il n’y a pas de bonne ou de mauvaise réponse.
+      </p>
+
+      <!-- Container dynamique des questions -->
+      <div id="cards-wrapper"></div>
+      <p id="submit-error" class="hidden rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert"></p>
+
+      <!-- Navigation -->
+      <div class="flex justify-between items-center pt-2">
+        <button id="btn-prev" type="button" onclick="changeStep(-1)" class="px-6 py-3 rounded-xl border border-sauge-300 bg-white text-sauge-800 font-semibold hover:bg-sauge-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+          &larr; Précédent
+        </button>
+
+        <button id="btn-next" type="button" onclick="changeStep(1)" class="px-6 py-3 rounded-xl bg-sauge-400 text-white font-semibold hover:bg-sauge-500 transition-all shadow-md">
+          Suivant &rarr;
+        </button>
+
+        <button id="btn-finish" type="button" onclick="finishQuiz()" class="hidden px-6 py-3 rounded-xl bg-sauge-500 hover:bg-sauge-600 text-white font-semibold transition-all shadow-md items-center gap-2">
+          <span>Continuer vers le questionnaire 3</span>
+          <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </button>
+      </div>
+
+    </form>
+
+  </main>
+
+  <script>
+    const questions = [
+      { id: "S1", text: "Durant le mois passé, combien de fois avez-vous été contrarié(e) par quelque chose d’inattendu ou imprévu ?" },
+      { id: "S2", text: "Durant le mois passé, combien de fois avez-vous eu le sentiment de ne pas pouvoir contrôler les aspects importants de votre vie ?" },
+      { id: "S3", text: "Durant le mois passé, combien de fois vous êtes-vous senti(e) nerveux(se) et « stressé(e) » ?" },
+      { id: "S4", text: "Durant le mois passé, combien de fois avez-vous eu confiance en votre capacité à gérer vos problèmes personnels ?", reverseScored: true },
+      { id: "S5", text: "Durant le mois passé, combien de fois avez-vous eu le sentiment que les choses allaient comme vous le vouliez ?", reverseScored: true },
+      { id: "S6", text: "Durant le mois passé, combien de fois avez-vous pensé que vous ne pourriez pas venir à bout de tout ce que vous aviez à faire ?" },
+      { id: "S7", text: "Durant le mois passé, combien de fois avez-vous été capable de contrôler les irritations que vous éprouvez dans votre vie ?", reverseScored: true },
+      { id: "S8", text: "Durant le mois passé, combien de fois avez-vous eu le sentiment de vraiment « dominer la situation » ?", reverseScored: true },
+      { id: "S9", text: "Durant le mois passé, combien de fois vous êtes-vous mis(e) en colère à cause de choses qui arrivaient et sur lesquelles vous n’aviez pas de contrôle ?" },
+      { id: "S10", text: "Durant le mois passé, combien de fois avez-vous eu le sentiment que les difficultés s’accumulaient tellement que vous ne pourriez pas les surmonter ?" }
+    ];
+
+    const frequencyOptions = [
+      { val: 0, label: "0 — Jamais" },
+      { val: 1, label: "1 — Presque jamais" },
+      { val: 2, label: "2 — Parfois" },
+      { val: 3, label: "3 — Assez souvent" },
+      { val: 4, label: "4 — Très souvent" }
+    ];
+
+    let currentStep = 0;
+    const answers = {};
+    const draftKey = 'tms_psychosocial_draft_v6';
+    let isSubmitting = false;
+    let psychosocialComment = '';
+
+    function savePsychosocialDraft() {
+      try {
+        sessionStorage.setItem(draftKey, JSON.stringify({ answers, currentStep, comment: psychosocialComment }));
+      } catch (error) {}
+    }
+
+    function lockPsychosocialDraft() {
+      document.querySelectorAll('#cards-wrapper input').forEach(input => { input.disabled = true; });
+      document.getElementById('psychosocial-comment').disabled = true;
+      document.getElementById('btn-prev').disabled = true;
+      document.getElementById('btn-next').disabled = true;
+    }
+
+    function renderCards() {
+      const wrapper = document.getElementById('cards-wrapper');
+      wrapper.innerHTML = questions.map((q, index) => {
+        return `
+            <div id="card-${index}" class="step-card ${index === currentStep ? '' : 'hidden'} bg-card rounded-3xl p-6 md:p-8 border border-sauge-300 shadow-xs space-y-6">
+              
+              <div class="flex items-center gap-3 border-b border-sauge-200 pb-4">
+                <span class="w-10 h-10 rounded-2xl bg-white text-sauge-800 font-serif-custom font-bold text-sm flex items-center justify-center border border-sauge-300">
+                  ${q.id}
+                </span>
+                <span class="text-xs font-semibold text-sauge-600 uppercase tracking-wider">Partie 2 — Ressenti personnel</span>
+              </div>
+
+              <p class="text-base md:text-lg font-semibold text-sauge-900">${q.text}</p>
+
+              <div class="space-y-2 pt-2">
+                <p class="text-xs font-medium text-sauge-600 mb-3">Choisissez la fréquence correspondante :</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  ${frequencyOptions.map(opt => {
+                    const value = q.reverseScored ? 4 - opt.val : opt.val;
+                    return `
+                    <label class="cursor-pointer">
+                      <input type="radio" name="scale-${q.id}" value="${value}" ${answers[q.id] !== null && answers[q.id] !== undefined && Number(answers[q.id]) === value ? 'checked' : ''} onchange="answers['${q.id}'] = ${value}; savePsychosocialDraft()" class="sr-only peer">
+                      <div class="p-3 text-left rounded-xl border border-sauge-200 bg-white text-xs md:text-sm text-sauge-800 peer-checked:bg-sauge-500 peer-checked:text-white peer-checked:font-bold hover:bg-sauge-50 transition-all shadow-xs">
+                        ${opt.label}
+                      </div>
+                    </label>
+                  `;
+                  }).join('')}
+                </div>
+              </div>
+
+            </div>
+          `;
+
+      }).join('') + `
+        <div id="psychosocial-comment-card" class="step-card ${currentStep === questions.length ? '' : 'hidden'} bg-card rounded-3xl p-6 md:p-8 border border-sauge-300 shadow-xs space-y-5">
+          <div class="border-b border-sauge-200 pb-4">
+            <h3 class="font-serif-custom font-bold text-sauge-900 text-xl">Commentaire ou précision</h3>
+            <p class="text-sm text-sauge-600 mt-1">Vous pouvez ajouter une précision avant de terminer. Cette étape est facultative.</p>
+          </div>
+          <div class="bg-white/80 rounded-2xl p-4 md:p-5 border border-sauge-200 space-y-2">
+            <label for="psychosocial-comment" class="block text-sm font-semibold text-sauge-900">Votre commentaire</label>
+            <textarea id="psychosocial-comment" maxlength="5000" rows="6" class="w-full rounded-xl border border-sauge-300 p-3 text-sm text-sauge-900 focus:border-sauge-500 focus:outline-none" placeholder="Saisissez votre commentaire ou précision."></textarea>
+          </div>
+        </div>`;
+      const commentInput = document.getElementById('psychosocial-comment');
+      commentInput.value = psychosocialComment;
+      commentInput.addEventListener('input', () => {
+        psychosocialComment = commentInput.value;
+        savePsychosocialDraft();
+      });
+    }
+
+    function changeStep(direction) {
+      if (sessionStorage.getItem('tms_pending_submission')) return;
+      if (direction > 0 && currentStep < questions.length && !isCurrentStepAnswered()) {
+        alert('Veuillez sélectionner une réponse avant de continuer.');
+        return;
+      }
+
+      const cards = document.querySelectorAll('.step-card');
+      cards[currentStep].classList.add('hidden');
+      
+      currentStep += direction;
+      
+      if (currentStep < 0) currentStep = 0;
+      if (currentStep > questions.length) currentStep = questions.length;
+
+      cards[currentStep].classList.remove('hidden');
+      updateStepUI();
+      savePsychosocialDraft();
+    }
+
+    function updateStepUI() {
+      const totalSteps = questions.length + 1;
+      const progressPercent = ((currentStep + 1) / totalSteps) * 100;
+      document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+      document.getElementById('progress-text').innerText = currentStep === questions.length
+        ? 'Commentaire facultatif'
+        : `Question ${currentStep + 1} / ${questions.length}`;
+
+      document.getElementById('btn-prev').disabled = (currentStep === 0);
+
+      const btnNext = document.getElementById('btn-next');
+      const btnFinish = document.getElementById('btn-finish');
+
+      if (currentStep === questions.length) {
+        btnNext.classList.add('hidden');
+        btnFinish.classList.remove('hidden');
+        btnFinish.classList.add('inline-flex');
+      } else {
+        btnNext.classList.remove('hidden');
+        btnFinish.classList.add('hidden');
+        btnFinish.classList.remove('inline-flex');
+      }
+    }
+
+    function isCurrentStepAnswered() {
+      const question = questions[currentStep];
+      const value = answers[question.id];
+      return value !== null && value !== undefined && value !== '';
+    }
+
+    async function finishQuiz() {
+      if (isSubmitting) return;
+      const errorEl = document.getElementById('submit-error');
+      const firstUnanswered = questions.findIndex(question => ![0, 1, 2, 3, 4].includes(Number(answers[question.id])));
+      if (firstUnanswered !== -1) {
+        currentStep = firstUnanswered;
+        document.querySelectorAll('.step-card').forEach((card, index) => card.classList.toggle('hidden', index !== currentStep));
+        updateStepUI();
+        alert(`Veuillez répondre aux ${questions.length} questions avant de terminer.`);
+        return;
+      }
+
+      const finishButton = document.getElementById('btn-finish');
+      const read = key => {
+        try { return JSON.parse(sessionStorage.getItem(key) || 'null'); }
+        catch (error) { return null; }
+      };
+      const infos = read('tms_infos');
+      const nordic = read('tms_nordic');
+      const submissionId = sessionStorage.getItem('tms_submission_id');
+      if (!infos || !nordic || !submissionId || sessionStorage.getItem('tms_consent') !== '1') {
+        errorEl.textContent = 'Les informations, le consentement ou le premier questionnaire sont manquants. Recommencez depuis la page d’accueil.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      isSubmitting = true;
+      finishButton.disabled = true;
+      finishButton.querySelector('span').textContent = 'Ouverture du questionnaire suivant…';
+      errorEl.classList.add('hidden');
+      let submission = read('tms_pending_submission');
+      if (!submission) {
+        submission = {
+          infos,
+          activity: read('tms_activity') || {
+            sportPracticed: 'non_renseigne',
+            sportType: '',
+            sessionsPerWeek: null,
+            minutesPerSession: null
+          },
+          nordic,
+          nordicComment: sessionStorage.getItem('tms_nordic_comment') || '',
+          psychosocial: { ...answers },
+          psychosocialComment,
+          psychosocialScaleVersion: 6,
+          submissionId,
+          consent: true
+        };
+        try {
+          sessionStorage.setItem('tms_pending_submission', JSON.stringify(submission));
+        } catch (error) {
+          isSubmitting = false;
+          finishButton.disabled = false;
+          finishButton.querySelector('span').textContent = 'Continuer vers le questionnaire 3';
+          errorEl.textContent = 'Impossible de conserver vos réponses dans cette session. Vérifiez le stockage du navigateur puis réessayez.';
+          errorEl.classList.remove('hidden');
+          return;
+        }
+      }
+      lockPsychosocialDraft();
+      sessionStorage.setItem('tms_psychosocial', JSON.stringify(submission.psychosocial));
+      sessionStorage.removeItem('tms_activity_knowledge_draft_v1');
+      window.location.assign('quizz3.html?v=20261110');
+    }
+
+    window.onload = function() {
+      try {
+        const pending = JSON.parse(sessionStorage.getItem('tms_pending_submission') || 'null');
+        const savedDraft = JSON.parse(sessionStorage.getItem(draftKey) || 'null');
+        const draft = pending
+          ? { answers: pending.psychosocial, currentStep: questions.length }
+          : savedDraft;
+        if (draft && draft.answers) {
+          questions.forEach(question => {
+            const value = Number(draft.answers[question.id]);
+            answers[question.id] = [0, 1, 2, 3, 4].includes(value) ? value : null;
+          });
+          if (Number.isInteger(draft.currentStep)) currentStep = Math.max(0, Math.min(draft.currentStep, questions.length));
+        }
+        psychosocialComment = pending
+          ? (typeof pending.psychosocialComment === 'string' ? pending.psychosocialComment : '')
+          : (draft && typeof draft.comment === 'string' ? draft.comment : '');
+      } catch (error) {}
+      questions.forEach(q => {
+        if (answers[q.id] === undefined) answers[q.id] = null;
+      });
+      renderCards();
+      updateStepUI();
+      if (sessionStorage.getItem('tms_pending_submission')) {
+        lockPsychosocialDraft();
+        document.getElementById('btn-finish').querySelector('span').textContent = 'Réessayer l’envoi';
+        const errorEl = document.getElementById('submit-error');
+        errorEl.textContent = 'Un envoi précédent n’a pas été confirmé. Les réponses envoyées sont conservées; réessayez l’envoi.';
+        errorEl.classList.remove('hidden');
+      }
+    };
+  </script>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div>
+        <p>© 2026 — Service APA. Tous droits réservés.</p>
+        <div class="rgpd-note">Ce site traite les réponses au questionnaire dans le cadre de la prévention des risques professionnels et de la santé au travail, conformément au RGPD et à la réglementation en vigueur.</div>
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="politique-confidentialite.html">Politique de confidentialité</a>
+        <a href="mailto:remyquelin@icloud.com">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

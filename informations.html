@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Vos informations — Questionnaire Nordique</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f4; --card-bg: #e5ece7; --card-border: #d2ddd6;
+      --text-main: #1c2d27; --text-muted: #53645d; --input-bg: #ffffff;
+      --input-border: #d0d7d3; --btn-bg: #8ba9a0; --btn-hover: #79978e; --btn-text: #ffffff;
+      --badge-bg: #d5e3dc; --badge-text: #33544a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background-color: var(--bg-color); color: var(--text-main); line-height: 1.5; }
+    .top-header { background-color: var(--card-bg); border-bottom: 1px solid var(--card-border); padding: 18px 20px; }
+    .top-header-inner { max-width: 1220px; margin: 0 auto; }
+    .top-header h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.8rem; font-weight: 700; }
+    .container { max-width: 680px; width: 100%; margin: 0 auto; padding: 40px 20px 48px; }
+    .card { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 44px; }
+    .card h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.7rem; font-weight: 600; margin-bottom: 10px; }
+    .card-subtitle { font-size: 1.05rem; color: var(--text-muted); margin-bottom: 24px; }
+    .badge { display: inline-block; background-color: var(--badge-bg); color: var(--badge-text); font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; margin-bottom: 14px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group.full-width { grid-column: span 2; }
+    .form-group[hidden] { display: none; }
+    .consent-label { display: flex; align-items: flex-start; gap: 12px; font-weight: 400; line-height: 1.5; }
+    .consent-label input { width: 18px; height: 18px; flex: 0 0 18px; margin-top: 3px; padding: 0; accent-color: var(--btn-hover); }
+    .consent-label a { color: var(--text-main); }
+    label { font-size: 0.95rem; font-weight: 700; margin-bottom: 7px; }
+    input, select {
+      width: 100%; padding: 14px 16px; font-family: inherit; font-size: 1rem;
+      border: 1px solid var(--input-border); border-radius: 6px; background-color: var(--input-bg);
+      color: var(--text-main); outline: none;
+    }
+    input::placeholder { color: #9aa8a1; }
+    input:focus, select:focus { border-color: #6a887f; }
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231c2d27' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center; cursor: pointer;
+    }
+    .btn-submit {
+      background-color: var(--btn-bg); color: var(--btn-text); border: none; border-radius: 6px;
+      padding: 16px 24px; font-family: inherit; font-size: 1.05rem; font-weight: 500; cursor: pointer;
+      margin-top: 28px; width: 100%;
+    }
+    .btn-submit:hover { background-color: var(--btn-hover); }
+    .footer-note { font-size: 0.9rem; color: var(--text-muted); margin-top: 12px; text-align: center; }
+    .form-error { color: #a12e2a; font-size: 0.9rem; margin-top: 16px; }
+    .site-footer {
+      background-color: #dfe8e3;
+      border-top: 1px solid var(--card-border);
+      margin-top: 24px;
+    }
+    .site-footer-inner {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .site-footer p {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+    }
+    .site-footer .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+    .site-footer a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .site-footer a:hover { text-decoration: underline; }
+    .rgpd-note {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+    }
+    .admin-link {
+      background-color: transparent;
+      border: 1px solid var(--input-border);
+      color: var(--text-main);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font: inherit;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .admin-link:hover {
+      background-color: var(--input-bg);
+    }
+    @media (max-width: 500px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full-width { grid-column: span 1; }
+      .top-header h1 { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-header">
+    <div class="top-header-inner"><h1>Comprendre vos douleurs au travail, pour mieux les prévenir</h1></div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+          <h2>Vos informations</h2>
+    
+      <form id="infoForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="nom">Nom</label>
+            <input type="text" id="nom" name="nom" placeholder="Votre nom" required>
+          </div>
+          <div class="form-group">
+            <label for="prenom">Prénom</label>
+            <input type="text" id="prenom" name="prenom" placeholder="Votre prénom" required>
+          </div>
+          <div class="form-group full-width">
+            <label for="fonction">Fonction</label>
+            <select id="fonction" name="fonction" required>
+              <option value="" disabled selected hidden>Sélectionnez une fonction</option>
+              <option value="Aide Soignant(e)">Aide Soignant(e)</option>
+              <option value="Manipulateurs Radio">Manipulateurs Radio</option>
+              <option value="Personnel Administratif">Personnel Administratif</option>
+              <option value="Brancardier">Brancardier</option>
+              <option value="Autre">Autre</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label for="service">Service</label>
+            <select id="service" name="service" required>
+              <option value="" disabled selected hidden>Sélectionnez un service</option>
+              <option value="Urgences">Urgences</option>
+              <option value="Réanimation">Réanimation</option>
+              <option value="Pédiatrie">Pédiatrie</option>
+              <option value="Chirurgie">Chirurgie</option>
+              <option value="Service Technique">Service Technique</option>
+              <option value="Autre">Autre</option>
+            </select>
+          </div>
+          <div class="form-group full-width" id="autre-service-group" hidden>
+            <label for="autre-service">Précisez votre service</label>
+            <input type="text" id="autre-service" name="autre-service" maxlength="120" placeholder="Votre service">
+          </div>
+          <div class="form-group full-width" id="autre-fonction-group" hidden>
+            <label for="autre-fonction">Précisez votre fonction</label>
+            <input type="text" id="autre-fonction" name="autre-fonction" maxlength="120" placeholder="Votre fonction">
+          </div>
+
+          <div class="form-group">
+            <label for="anciennete">Ancienneté</label>
+            <select id="anciennete" name="anciennete" required>
+              <option value="" disabled selected hidden>Sélectionnez</option>
+              <option value="moins_1_an">Moins d'un an</option>
+              <option value="1_5_ans">1 à 5 ans</option>
+              <option value="5_10_ans">5 à 10 ans</option>
+              <option value="plus_10_ans">Plus de 10 ans</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="lateralite">Latéralité</label>
+            <select id="lateralite" name="lateralite" required>
+              <option value="" disabled selected hidden>Sélectionnez</option>
+              <option value="droitier">Droitier(ère)</option>
+              <option value="gaucher">Gaucher(ère)</option>
+              <option value="ambidextre">Ambidextre</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label class="consent-label" for="consent">
+              <input type="checkbox" id="consent" name="consent" required>
+              <span>Je consens explicitement au traitement de mes réponses et des données de santé associées pour la prévention des risques professionnels. J’ai lu la <a href="politique-confidentialite.html" target="_blank" rel="noopener">politique de confidentialité</a>.</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Commencer les questionnaires</button>
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+        <div class="footer-note">Le parcours comprend trois questionnaires : douleurs au travail, conditions psychosociales et un questionnaire rapide d’éducation à la santé sur l’activité physique et la sédentarité.</div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const serviceSelect = document.getElementById('service');
+    const fonctionSelect = document.getElementById('fonction');
+    const autreServiceGroup = document.getElementById('autre-service-group');
+    const autreServiceInput = document.getElementById('autre-service');
+    const autreFonctionGroup = document.getElementById('autre-fonction-group');
+    const autreFonctionInput = document.getElementById('autre-fonction');
+
+    function updateOtherField(select, group, input) {
+      const isOther = select.value === 'Autre';
+      group.hidden = !isOther;
+      input.required = isOther;
+      if (!isOther) input.value = '';
+    }
+
+    serviceSelect.addEventListener('change', () => updateOtherField(serviceSelect, autreServiceGroup, autreServiceInput));
+    fonctionSelect.addEventListener('change', () => updateOtherField(fonctionSelect, autreFonctionGroup, autreFonctionInput));
+
+    document.getElementById('infoForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const submitButton = this.querySelector('button[type="submit"]');
+      const errorEl = document.getElementById('form-error');
+      errorEl.hidden = true;
+      submitButton.disabled = true;
+      var data = {
+        nom: document.getElementById('nom').value.trim(),
+        prenom: document.getElementById('prenom').value.trim(),
+        service: serviceSelect.value === 'Autre' ? autreServiceInput.value.trim() : serviceSelect.value,
+        fonction: fonctionSelect.value === 'Autre' ? autreFonctionInput.value.trim() : fonctionSelect.value,
+        anciennete: document.getElementById('anciennete').value,
+        lateralite: document.getElementById('lateralite').value
+      };
+      try {
+        const response = await fetch('api.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'checkName', nom: data.nom, prenom: data.prenom })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Vérification impossible.');
+        if (result.used) {
+          errorEl.textContent = 'Ce nom et ce prénom ont déjà été utilisés pour un questionnaire.';
+          errorEl.hidden = false;
+          return;
+        }
+        sessionStorage.removeItem('tms_saved');
+        sessionStorage.removeItem('tms_nordic_draft');
+        sessionStorage.removeItem('tms_psychosocial_draft');
+        sessionStorage.removeItem('tms_nordic');
+        sessionStorage.removeItem('tms_psychosocial');
+        sessionStorage.removeItem('tms_pending_submission');
+        sessionStorage.removeItem('tms_activity');
+        sessionStorage.setItem('tms_consent', '1');
+        const submissionId = window.crypto && typeof window.crypto.randomUUID === 'function'
+          ? window.crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        sessionStorage.setItem('tms_submission_id', submissionId);
+        sessionStorage.setItem('tms_infos', JSON.stringify(data));
+        window.location.href = 'activite.html';
+      } catch (error) {
+        errorEl.textContent = error.message || 'Impossible de vérifier votre nom. Veuillez réessayer.';
+        errorEl.hidden = false;
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  </script>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div>
+        <p>© 2026 — Service APA. Tous droits réservés.</p>
+        <div class="rgpd-note">Ce site traite les réponses au questionnaire dans le cadre de la prévention des risques professionnels et de la santé au travail, conformément au RGPD et à la réglementation en vigueur.</div>
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="politique-confidentialite.html">Politique de confidentialité</a>
+        <a href="mailto:remyquelin@icloud.com">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

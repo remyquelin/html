@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Questionnaire rapide d’éducation à la santé</title>
+
+  <script src="vendor/tailwindcss-3.4.17.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif'],
+          },
+          colors: {
+            sauge: {
+              50: '#f4f6f4',
+              100: '#e5ece7',
+              200: '#cbdad0',
+              300: '#aba892',
+              400: '#8ba9a0',
+              500: '#79978e',
+              600: '#5c7870',
+              700: '#465e57',
+              800: '#354843',
+              900: '#23302d'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #f4f6f4;
+      color: #23302d;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .font-serif-custom { font-family: 'Playfair Display', serif; }
+    .bg-card { background-color: #e5ece7; }
+    .site-footer {
+      background-color: #dfe8e3;
+      border-top: 1px solid #d2ddd6;
+      margin-top: 32px;
+    }
+    .site-footer-inner {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 20px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .site-footer p { font-size: 0.86rem; color: #53645d; }
+    .site-footer .footer-links { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+    .site-footer a {
+      color: #23302d;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .site-footer a:hover { text-decoration: underline; }
+    .rgpd-note {
+      font-size: 0.78rem;
+      color: #53645d;
+      line-height: 1.5;
+      max-width: 620px;
+    }
+    @media (max-width: 640px) {
+      .question-choice { padding: 0.75rem; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-sauge-400 selection:text-white">
+  <header class="bg-white border-b border-sauge-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <h1 class="font-serif-custom font-bold text-2xl text-sauge-900">Questionnaire rapide d’éducation à la santé</h1>
+        <p class="text-xs text-sauge-600">20 questions sur l’activité physique et la sédentarité</p>
+      </div>
+      <div class="w-full md:w-64 flex flex-col gap-1.5">
+        <div class="flex justify-between text-xs font-semibold text-sauge-700">
+          <span>Avancement</span>
+          <span id="progress-text">Question 1 / 20</span>
+        </div>
+        <div class="w-full bg-sauge-100 rounded-full h-2.5 overflow-hidden border border-sauge-200">
+          <div id="progress-bar" class="bg-sauge-400 h-2.5 rounded-full transition-all duration-300" style="width: 5%"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-3xl w-full mx-auto px-4 sm:px-6 py-8">
+    <form id="quiz-form" onsubmit="return false;" class="space-y-6">
+      <p class="rounded-xl border border-sauge-200 bg-white px-4 py-3 text-sm text-sauge-700">
+        Pour chaque question, choisissez la réponse qui vous semble correcte. Vos réponses seront enregistrées à la fin du questionnaire.
+      </p>
+      <div id="cards-wrapper"></div>
+      <p id="submit-error" class="hidden rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert"></p>
+      <div id="navigation" class="flex justify-between items-center pt-2">
+        <button id="btn-prev" type="button" class="px-6 py-3 rounded-xl border border-sauge-300 bg-white text-sauge-800 font-semibold hover:bg-sauge-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+          &larr; Précédent
+        </button>
+        <button id="btn-next" type="button" class="px-6 py-3 rounded-xl bg-sauge-400 text-white font-semibold hover:bg-sauge-500 transition-all shadow-md">
+          Suivant &rarr;
+        </button>
+        <button id="btn-finish" type="button" class="hidden px-6 py-3 rounded-xl bg-sauge-500 hover:bg-sauge-600 text-white font-semibold transition-all shadow-md items-center gap-2">
+          <span>Terminer</span>
+          <svg class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    const questions = [
+      { text: "L’activité physique correspond :", options: ["Uniquement au sport", "À tout mouvement corporel entraînant une dépense énergétique", "Uniquement à l’exercice réalisé en salle", "À la marche de plus de 30 minutes"], answer: 1 },
+      { text: "La sédentarité désigne principalement :", options: ["L’absence totale de sport", "Une activité physique insuffisante", "Une situation d’éveil en position assise, allongée ou statique, avec faible dépense énergétique", "Le travail de nuit"], answer: 2 },
+      { text: "Une personne peut-elle être active et sédentaire ?", options: ["Oui", "Non", "Seulement après 65 ans", "Seulement en cas d’obésité"], answer: 0 },
+      { text: "Chez l’adulte, la recommandation minimale d’activité aérobie modérée est de :", options: ["60 minutes par jour", "100 minutes par semaine", "150 minutes par semaine", "300 minutes par semaine"], answer: 2 },
+      { text: "Le volume hebdomadaire correspondant à un bénéfice supplémentaire est :", options: ["75 minutes d’activité modérée", "150 à 300 minutes d’activité modérée", "30 minutes d’activité légère", "10 000 pas obligatoires par jour"], answer: 1 },
+      { text: "Une alternative aux 150–300 minutes d’intensité modérée est :", options: ["20 minutes d’intensité élevée par semaine", "75–150 minutes d’intensité soutenue par semaine", "5 minutes d’étirements quotidiens", "Une séance mensuelle intensive"], answer: 1 },
+      { text: "Une activité d’intensité modérée entraîne habituellement :", options: ["Aucun changement respiratoire", "Un essoufflement permettant généralement de parler", "L’impossibilité de parler", "Une perte de connaissance"], answer: 1 },
+      { text: "Une activité d’intensité soutenue entraîne généralement :", options: ["Une respiration inchangée", "Un essoufflement important rendant la conversation difficile", "Une activité exclusivement musculaire", "Une position assise"], answer: 1 },
+      { text: "Le renforcement musculaire est recommandé :", options: ["Au moins 2 jours par semaine", "Une fois par mois", "Uniquement chez les sportifs", "Uniquement après 65 ans"], answer: 0 },
+      { text: "Les principaux groupes musculaires doivent-ils être sollicités lors du renforcement ?", options: ["Oui", "Non, un seul groupe suffit", "Seulement les membres inférieurs", "Seulement les abdominaux"], answer: 0 },
+      { text: "La marche rapide peut être :", options: ["Une activité physique d’intensité modérée", "Toujours une activité soutenue", "Une activité sédentaire", "Un exercice de renforcement uniquement"], answer: 0 },
+      { text: "Les déplacements à pied ou à vélo :", options: ["Ne comptent pas comme activité physique", "Comptent comme activité physique", "Comptent uniquement s’ils durent plus d’une heure", "Sont toujours du sport"], answer: 1 },
+      { text: "Les activités domestiques et professionnelles :", options: ["Peuvent contribuer au niveau global d’activité physique", "Ne sont jamais prises en compte", "Sont toujours sédentaires", "Ne sont utiles qu’après 65 ans"], answer: 0 },
+      { text: "Toute augmentation de l’activité physique :", options: ["Est inutile si les recommandations ne sont pas atteintes", "Peut déjà apporter un bénéfice pour la santé", "Est dangereuse", "Doit obligatoirement être intensive"], answer: 1 },
+      { text: "Chez une personne inactive, la reprise devrait être :", options: ["Progressive", "Maximale dès la première séance", "Évitée sans épreuve d’effort systématique", "Limitée aux étirements"], answer: 0 },
+      { text: "Pour limiter les effets de la sédentarité, il est pertinent de :", options: ["Rompre régulièrement les périodes prolongées assises", "Faire une seule séance sportive le week-end", "Rester debout sans bouger", "Ne bouger qu’après 8 heures assises"], answer: 0 },
+      { text: "La sédentarité prolongée peut augmenter le risque :", options: ["Cardiovasculaire et métabolique", "Uniquement infectieux", "Uniquement traumatique", "De myopie uniquement"], answer: 0 },
+      { text: "Une activité physique adaptée chez un patient chronique doit tenir compte :", options: ["De sa pathologie et de ses comorbidités", "De sa condition physique", "De ses capacités fonctionnelles", "De l’ensemble de ces éléments"], answer: 3 },
+      { text: "Le rôle d’un soignant peut comprendre :", options: ["Repérer l’inactivité et la sédentarité", "Valoriser les possibilités d’activité au quotidien", "Relayer des conseils adaptés et sécurisés", "Les trois réponses précédentes"], answer: 3 },
+      { text: "Concernant l’activité physique chez l’adulte :", options: ["Elle est contre-indiquée chez toute personne atteinte d’une maladie chronique", "Elle doit toujours être prescrite à intensité élevée", "Elle peut être adaptée à l’état de santé et aux capacités de la personne", "Elle ne concerne pas les patients hospitalisés"], answer: 2 }
+    ];
+
+    const draftKey = 'tms_activity_knowledge_draft_v1';
+    const letters = ['A', 'B', 'C', 'D'];
+    const answers = Object.fromEntries(questions.map((_, index) => [`Q${index + 1}`, null]));
+    let currentStep = 0;
+
+    function saveDraft() {
+      try {
+        sessionStorage.setItem(draftKey, JSON.stringify({ answers, currentStep }));
+      } catch (error) {
+        console.error('Impossible de sauvegarder le brouillon du questionnaire.', error);
+      }
+    }
+
+    function renderQuestions() {
+      const wrapper = document.getElementById('cards-wrapper');
+      wrapper.innerHTML = questions.map((question, index) => `
+        <section class="step-card ${index === currentStep ? '' : 'hidden'} bg-card rounded-3xl p-6 md:p-8 border border-sauge-300 shadow-xs transition-all duration-300 space-y-5" aria-labelledby="question-title-${index}">
+          <div class="flex justify-between items-start border-b border-sauge-200 pb-4 gap-3">
+            <div class="flex items-center gap-3">
+              <span class="w-9 h-9 shrink-0 rounded-2xl bg-white text-sauge-800 font-serif-custom font-bold text-base flex items-center justify-center border border-sauge-300 shadow-xs">${String(index + 1).padStart(2, '0')}</span>
+              <h2 id="question-title-${index}" class="font-serif-custom font-bold text-sauge-900 text-lg md:text-xl">${question.text}</h2>
+            </div>
+          </div>
+          <fieldset class="bg-white/80 rounded-2xl p-4 md:p-5 border border-sauge-200 space-y-3">
+            <legend class="text-sm font-semibold text-sauge-900">Choisissez une réponse :</legend>
+            <div class="grid grid-cols-1 gap-2.5">
+              ${question.options.map((option, optionIndex) => `
+                <label class="question-choice cursor-pointer">
+                  <input type="radio" name="question-${index}" value="${optionIndex}" ${answers[`Q${index + 1}`] === optionIndex ? 'checked' : ''} class="sr-only peer">
+                  <span class="block p-3 rounded-xl border border-sauge-200 bg-white text-sm text-sauge-800 peer-checked:bg-sauge-500 peer-checked:text-white peer-checked:font-bold hover:bg-sauge-50 transition-all shadow-xs">
+                    <span class="font-bold">${letters[optionIndex]}.</span> ${option}
+                  </span>
+                </label>
+              `).join('')}
+            </div>
+          </fieldset>
+        </section>
+      `).join('');
+
+      wrapper.querySelectorAll('input[type="radio"]').forEach(input => {
+        input.addEventListener('change', () => {
+          answers[`Q${currentStep + 1}`] = Number(input.value);
+          saveDraft();
+        });
+      });
+    }
+
+    function updateStepUI() {
+      document.getElementById('progress-text').textContent = `Question ${currentStep + 1} / ${questions.length}`;
+      document.getElementById('progress-bar').style.width = `${((currentStep + 1) / questions.length) * 100}%`;
+      document.getElementById('btn-prev').disabled = currentStep === 0;
+      document.getElementById('btn-next').classList.toggle('hidden', currentStep === questions.length - 1);
+      document.getElementById('btn-finish').classList.toggle('hidden', currentStep !== questions.length - 1);
+      document.getElementById('btn-finish').classList.toggle('inline-flex', currentStep === questions.length - 1);
+    }
+
+    function changeStep(direction) {
+      if (direction > 0 && answers[`Q${currentStep + 1}`] === null) {
+        alert('Veuillez sélectionner une réponse avant de continuer.');
+        return;
+      }
+      document.querySelectorAll('.step-card')[currentStep].classList.add('hidden');
+      currentStep = Math.max(0, Math.min(currentStep + direction, questions.length - 1));
+      document.querySelectorAll('.step-card')[currentStep].classList.remove('hidden');
+      updateStepUI();
+      saveDraft();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function finishQuiz() {
+      const errorEl = document.getElementById('submit-error');
+      const firstUnanswered = questions.findIndex((_, index) => !Number.isInteger(answers[`Q${index + 1}`]));
+      if (firstUnanswered !== -1) {
+        currentStep = firstUnanswered;
+        document.querySelectorAll('.step-card').forEach((card, index) => card.classList.toggle('hidden', index !== currentStep));
+        updateStepUI();
+        alert('Veuillez répondre aux 20 questions avant de terminer.');
+        return;
+      }
+
+      let submission;
+      try {
+        submission = JSON.parse(sessionStorage.getItem('tms_pending_submission') || 'null');
+      } catch (error) {
+        errorEl.textContent = 'Les réponses précédentes sont illisibles. Recommencez depuis la page d’accueil.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      if (!submission || !submission.submissionId || sessionStorage.getItem('tms_consent') !== '1') {
+        errorEl.textContent = 'Les questionnaires précédents ou le consentement sont manquants. Recommencez depuis la page d’accueil.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      const finishButton = document.getElementById('btn-finish');
+      finishButton.disabled = true;
+      finishButton.querySelector('span').textContent = 'Enregistrement…';
+      errorEl.classList.add('hidden');
+      submission.activityKnowledge = { ...answers };
+      try {
+        sessionStorage.setItem('tms_pending_submission', JSON.stringify(submission));
+      } catch (error) {
+        finishButton.disabled = false;
+        finishButton.querySelector('span').textContent = 'Réessayer';
+        errorEl.textContent = 'Impossible de conserver vos réponses dans cette session. Vérifiez le stockage du navigateur puis réessayez.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        const response = await fetch('api.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submission)
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || 'L’enregistrement a échoué.');
+
+        sessionStorage.setItem('tms_saved', '1');
+        sessionStorage.setItem('tms_resultat_repondant', JSON.stringify({
+          nordic: submission.nordic,
+          nordicComment: submission.nordicComment,
+          psychosocial: submission.psychosocial,
+          psychosocialComment: submission.psychosocialComment,
+          activityKnowledge: submission.activityKnowledge
+        }));
+        sessionStorage.removeItem('tms_pending_submission');
+        sessionStorage.removeItem('tms_psychosocial_draft_v6');
+        sessionStorage.removeItem(draftKey);
+        window.location.href = 'fin.html';
+      } catch (error) {
+        errorEl.textContent = `${error.message} Vos réponses sont conservées; réessayez l’enregistrement sans les modifier.`;
+        errorEl.classList.remove('hidden');
+      } finally {
+        finishButton.disabled = false;
+        finishButton.querySelector('span').textContent = 'Réessayer';
+      }
+    }
+
+    document.getElementById('btn-prev').addEventListener('click', () => changeStep(-1));
+    document.getElementById('btn-next').addEventListener('click', () => changeStep(1));
+    document.getElementById('btn-finish').addEventListener('click', finishQuiz);
+
+    try {
+      const draft = JSON.parse(sessionStorage.getItem(draftKey) || 'null');
+      if (draft && draft.answers && typeof draft.answers === 'object') {
+        Object.keys(answers).forEach(questionId => {
+          const questionIndex = Number(questionId.slice(1)) - 1;
+          const answer = Number(Array.isArray(draft.answers) ? draft.answers[questionIndex] : draft.answers[questionId]);
+          if (Number.isInteger(answer) && answer >= 0 && answer < 4) answers[questionId] = answer;
+        });
+        if (Number.isInteger(draft.currentStep)) currentStep = Math.max(0, Math.min(draft.currentStep, questions.length - 1));
+      }
+    } catch (error) {
+      console.error('Impossible de restaurer le brouillon du questionnaire.', error);
+    }
+    renderQuestions();
+    updateStepUI();
+  </script>
+
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <div>
+        <p>© 2026 — Service APA. Tous droits réservés.</p>
+        <div class="rgpd-note">Ce site traite les réponses au questionnaire dans le cadre de la prévention des risques professionnels et de la santé au travail, conformément au RGPD et à la réglementation en vigueur.</div>
+      </div>
+      <div class="footer-links">
+        <a href="mentions-legales.html">Mentions légales</a>
+        <a href="politique-confidentialite.html">Politique de confidentialité</a>
+        <a href="mailto:remyquelin@icloud.com">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
